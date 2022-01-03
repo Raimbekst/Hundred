@@ -25,7 +25,7 @@ func (c *CheckRepository) Create(info domain.CheckInfo) (int, error) {
 		`INSERT INTO 
 					%s
 				(user_id,partner_id,check_amount,check_date)
-					VALUES($1,$2,$3, to_timestamp($4)::date)
+					VALUES($1,$2,$3, to_timestamp($4) at time zone 'GMT')
 				RETURNING id `, checks)
 
 	var id int
