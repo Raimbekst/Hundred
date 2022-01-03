@@ -40,13 +40,13 @@ type Notification struct {
 	Link      string  `json:"link" `
 	Reference string  `json:"reference" `
 	Date      float64 `json:"date"`
-	Time      float32 `json:"time"`
+	Time      int     `json:"time"`
 }
 
 // @Security User_Auth
 // @Tags notification
 // @Description create notification for all users
-// @ID createNotyForAllUsers
+// @ModuleID createNotyForAllUsers
 // @Accept json
 // @Produce json
 // @Param data body Notification true "notification"
@@ -63,14 +63,17 @@ func (h *Handler) createNotyForAllUsers(c *fiber.Ctx) error {
 	}
 	var input Notification
 
-	if err := c.QueryParser(&input); err != nil {
+	if err := c.BodyParser(&input); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(response{Message: err.Error()})
 	}
+	fmt.Println(input)
+
 	ok, errs := validationStructs.ValidateStruct(input)
 
 	if !ok {
 		return c.Status(fiber.StatusBadRequest).JSON(errs)
 	}
+
 	noty := domain.Notification{
 		Title:     input.Title,
 		Text:      input.Text,
@@ -79,8 +82,8 @@ func (h *Handler) createNotyForAllUsers(c *fiber.Ctx) error {
 		Reference: input.Reference,
 		Date:      input.Date,
 		Time:      input.Time,
-		Status:    planned,
-		Getters:   getterAll,
+		Status:    1,
+		Getters:   1,
 	}
 
 	id, err := h.services.Notification.Create(noty)
@@ -166,8 +169,8 @@ func (h *Handler) createNotyForSpecificUser(c *fiber.Ctx) error {
 		Title:   input.Title,
 		Text:    input.Text,
 		Link:    input.Link,
-		Status:  sent,
-		Getters: getterUser,
+		Status:  2,
+		Getters: 2,
 		Date:    float64(time.Now().Unix()),
 		Ids:     input.UserIds,
 	}
@@ -194,6 +197,7 @@ func (h *Handler) createNotyForSpecificUser(c *fiber.Ctx) error {
 // @Failure default {object} response
 // @Router /notification [get]
 func (h *Handler) getAllNotifications(c *fiber.Ctx) error {
+	url := c.BaseURL()
 	var page domain.Pagination
 	if err := c.QueryParser(&page); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(response{Message: err.Error()})
@@ -201,6 +205,12 @@ func (h *Handler) getAllNotifications(c *fiber.Ctx) error {
 	list, err := h.services.Notification.GetAll(page)
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(response{Message: err.Error()})
+	}
+
+	for _, value := range list.Data {
+		if value.Logo != "" {
+			value.Logo = url + "/" + "media/" + value.Logo
+		}
 	}
 	return c.Status(fiber.StatusOK).JSON(list)
 
@@ -222,6 +232,7 @@ func (h *Handler) getNotificationById(c *fiber.Ctx) error {
 	if err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(response{Message: err.Error()})
 	}
+	fmt.Println(id)
 	list, err := h.services.Notification.GetById(id)
 	if err != nil {
 		if errors.Is(err, domain.ErrNotFound) {
@@ -233,18 +244,18 @@ func (h *Handler) getNotificationById(c *fiber.Ctx) error {
 }
 
 // @Security User_Auth
-// @Tags city
-// @Description  update  city
-// @ModuleID updateCity
+// @Tags notification
+// @Description  update  notification
+// @ModuleID updateNotification
 // @Accept  json
 // @Produce  json
-// @Param id path string true "city id"
-// @Param input body City false "city"
+// @Param id path string true "notification id"
+// @Param input body Notification false "notification"
 // @Success 200 {object} okResponse
 // @Failure 400,404 {object} response
 // @Failure 500 {object} response
 // @Failure default {object} response
-// @Router /city/{id} [put]
+// @Router /notification/{id} [put]
 func (h *Handler) updateNotification(c *fiber.Ctx) error {
 	userType, _ := getUser(c)
 
@@ -266,9 +277,11 @@ func (h *Handler) updateNotification(c *fiber.Ctx) error {
 	}
 
 	id, err := strconv.Atoi(c.Params("id"))
+
 	if err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(response{Message: err.Error()})
 	}
+	fmt.Println(id)
 	if err := h.services.Notification.Update(id, noty); err != nil {
 		if errors.Is(err, domain.ErrNotFound) || errors.Is(err, domain.ErrUpdateNotification) {
 			return c.Status(fiber.StatusBadRequest).JSON(response{Message: err.Error()})

@@ -2726,7 +2726,6 @@ var doc = `{
                 "tags": [
                     "notification"
                 ],
-                "operationId": "createNotyForAllUsers",
                 "parameters": [
                     {
                         "description": "notification",
@@ -2920,6 +2919,72 @@ var doc = `{
                         "description": "OK",
                         "schema": {
                             "$ref": "#/definitions/domain.Notification"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/v1.response"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/v1.response"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/v1.response"
+                        }
+                    },
+                    "default": {
+                        "description": "",
+                        "schema": {
+                            "$ref": "#/definitions/v1.response"
+                        }
+                    }
+                }
+            },
+            "put": {
+                "security": [
+                    {
+                        "User_Auth": []
+                    }
+                ],
+                "description": "update  notification",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "notification"
+                ],
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "notification id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "notification",
+                        "name": "input",
+                        "in": "body",
+                        "schema": {
+                            "$ref": "#/definitions/v1.Notification"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/v1.okResponse"
                         }
                     },
                     "400": {
@@ -4437,16 +4502,12 @@ var doc = `{
         },
         "domain.Notification": {
             "type": "object",
-            "required": [
-                "text",
-                "title"
-            ],
             "properties": {
                 "date": {
                     "type": "number"
                 },
                 "getters": {
-                    "type": "string"
+                    "type": "integer"
                 },
                 "id": {
                     "type": "integer"
@@ -4460,6 +4521,9 @@ var doc = `{
                 "link": {
                     "type": "string"
                 },
+                "logo": {
+                    "type": "string"
+                },
                 "partner_id": {
                     "type": "integer"
                 },
@@ -4467,19 +4531,22 @@ var doc = `{
                     "type": "string"
                 },
                 "status": {
-                    "type": "string"
+                    "type": "integer"
                 },
                 "text": {
                     "type": "string"
                 },
                 "time": {
-                    "type": "number"
+                    "type": "integer"
                 },
                 "title": {
                     "type": "string"
                 },
                 "users": {
-                    "$ref": "#/definitions/domain.GetterList"
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/domain.GetterList"
+                    }
                 }
             }
         },
@@ -4795,7 +4862,7 @@ var doc = `{
                     "type": "string"
                 },
                 "time": {
-                    "type": "number"
+                    "type": "integer"
                 },
                 "title": {
                     "type": "string"

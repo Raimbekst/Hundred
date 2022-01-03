@@ -1,18 +1,19 @@
 package domain
 
 type Notification struct {
-	Id        int         `json:"id" db:"id"`
-	Title     string      `json:"title" db:"title" validate:"required"`
-	Text      string      `json:"text" db:"text" validate:"required"`
-	PartnerId int         `json:"partner_id" db:"partner_id"`
-	Link      string      `json:"link" db:"link"`
-	Reference string      `json:"reference" db:"reference"`
-	Date      float64     `json:"date" db:"noty_date"`
-	Time      float32     `json:"time" db:"noty_time"`
-	Status    string      `json:"status,omitempty" db:"status"`
-	Getters   string      `json:"getters,omitempty" db:"noty_getters"`
-	Ids       []int       `json:"ids,omitempty"`
-	Users     *GetterList `json:"users" db:"users"`
+	Id        int           `json:"id" db:"id"`
+	Title     string        `json:"title" db:"title"`
+	Text      string        `json:"text" db:"text" `
+	PartnerId int           `json:"partner_id,omitempty" db:"partner_id"`
+	Logo      string        `json:"logo,omitempty" db:"logo"`
+	Link      string        `json:"link,omitempty" db:"link"`
+	Reference string        `json:"reference,omitempty" db:"reference"`
+	Date      float64       `json:"date" db:"noty_date"`
+	Time      int           `json:"time" db:"noty_time"`
+	Status    int           `json:"status,omitempty" db:"status"`
+	Getters   int           `json:"getters,omitempty" db:"noty_getters"`
+	Ids       []int         `json:"ids,omitempty"`
+	Users     []*GetterList `json:"users" db:"users"`
 }
 
 type GetterList struct {

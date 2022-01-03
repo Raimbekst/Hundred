@@ -21,7 +21,7 @@ func (c *RaffleRepos) Create(raffle domain.Raffle) (int, error) {
 		`INSERT INTO %s
 						(raffle_date,raffle_time,check_category,raffle_type,status,reference)
 					VALUES
-							 to_timestamp($1) at time zone 'GMT',$2, $3, $4, $5, $6) 
+							 (to_timestamp($1) at time zone 'GMT' ,$2, $3, $4, $5, $6) 
 					RETURNING id`, raffles)
 
 	err := c.db.QueryRowx(query, raffle.RaffleDate, raffle.RaffleTime, raffle.CheckCategory, raffle.RaffleType, raffle.Status, raffle.Reference).Scan(&id)

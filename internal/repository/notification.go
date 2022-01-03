@@ -3,10 +3,8 @@ package repository
 import (
 	"HundredToFive/internal/domain"
 	"database/sql"
-	"errors"
 	"fmt"
 	"github.com/jmoiron/sqlx"
-	"reflect"
 	"strings"
 )
 
@@ -25,7 +23,7 @@ func (n *NotificationRepos) Create(noty domain.Notification) (int, error) {
 							%s
 						(title,text,partner_id,link,reference,noty_date,noty_time,status,noty_getters) 
 							VALUES
-						($1,$2,$3,$4,$5,to_timestamp($6)::date,$7,$8,$9) RETURNING id`, notifications)
+						($1,$2,$3,$4,$5,to_timestamp($6) at time zone 'GMT',$7,$8,$9) RETURNING id`, notifications)
 
 	err := n.db.QueryRowx(query, noty.Title, noty.Text, noty.PartnerId, noty.Link, noty.Reference, noty.Date, noty.Time, noty.Status, noty.Getters).Scan(&id)
 
@@ -121,7 +119,15 @@ func (n *NotificationRepos) GetAll(page domain.Pagination) (*domain.GetAllNotifi
 
 	inp := make([]*domain.Notification, 0, page.Limit)
 
-	query := fmt.Sprintf("SELECT * FROM %s ORDER BY id ASC LIMIT $1 OFFSET $2", notifications)
+	query := fmt.Sprintf(
+		`SELECT 
+						n.id,n.title,n.text,p.logo,
+						n.link,n.reference,
+						extract(epoch from n.noty_date::timestamp at time zone 'GMT') "noty_date",
+						n.noty_time,n.status,n.noty_getters
+					FROM %s n
+					INNER JOIN %s p on n.partner_id = p.id  
+					ORDER BY id ASC LIMIT $1 OFFSET $2`, notifications, partners)
 
 	err = n.db.Select(&inp, query, page.Limit, offset)
 
@@ -162,7 +168,17 @@ func (n *NotificationRepos) GetAll(page domain.Pagination) (*domain.GetAllNotifi
 
 func (n *NotificationRepos) GetById(id int) (*domain.Notification, error) {
 	var noty domain.Notification
-	query := fmt.Sprintf("SELECT * FROM %s WHERE id=$1", notifications)
+
+	query := fmt.Sprintf(
+		`SELECT 
+						n.id,n.title,n.text,p.logo,
+						n.link,n.reference,
+						extract(epoch from n.noty_date::timestamp at time zone 'GMT') "noty_date",
+						n.noty_time,n.status,n.noty_getters
+					FROM %s n
+					INNER JOIN %s p 
+					on n.partner_id = p.id WHERE n.id = $1`, notifications, partners)
+
 	err := n.db.Get(&noty, query, id)
 	if err != nil {
 		return nil, fmt.Errorf("repository.GetById: %w", domain.ErrNotFound)
@@ -190,55 +206,69 @@ func (n *NotificationRepos) Update(id int, inp domain.Notification) error {
 
 	queryCheck := fmt.Sprintf("SELECT status FROM %s WHERE id = $1", notifications)
 
-	err := n.db.Get(&input, queryCheck)
+	err := n.db.Get(&input, queryCheck, id)
 
 	if err != nil {
 		return fmt.Errorf("repository.Update: %w", domain.ErrNotFound)
 	}
 
-	if input.Status != planned {
+	if input.Status != 1 {
 		return fmt.Errorf("repository.Update: %w", domain.ErrUpdateNotification)
 	}
 
-	setValues := make([]string, 0, reflect.TypeOf(domain.Notification{}).NumField())
+	setValues := make([]string, 0)
+	args := make([]interface{}, 0)
+	argId := 1
+
+	if inp.Date != 0 {
+		setValues = append(setValues, fmt.Sprintf(" noty_date = to_timestamp($%d) at time zone 'GMT' ", argId))
+		args = append(args, inp.Date)
+		argId++
+	}
 
 	if inp.Title != "" {
-		setValues = append(setValues, fmt.Sprintf("title=:title"))
+		setValues = append(setValues, fmt.Sprintf("title = $%d", argId))
+		args = append(args, inp.Title)
+		argId++
 	}
+
 	if inp.Text != "" {
-		setValues = append(setValues, fmt.Sprintf("text=:text"))
-	}
-	if inp.PartnerId != 0 {
-		setValues = append(setValues, fmt.Sprintf("partner_id=:partner_id"))
+		setValues = append(setValues, fmt.Sprintf("text=$%d", argId))
+		args = append(args, inp.Text)
+		argId++
 	}
 
 	if inp.Link != "" {
-		setValues = append(setValues, fmt.Sprintf("link=:link"))
+		setValues = append(setValues, fmt.Sprintf("link=$%d", argId))
+		args = append(args, inp.Link)
+		argId++
 	}
+
 	if inp.Reference != "" {
-		setValues = append(setValues, fmt.Sprintf("reference=:reference"))
-	}
-	if inp.Date != 0 {
-		setValues = append(setValues, fmt.Sprintf("noty_date=:noty_date"))
+		setValues = append(setValues, fmt.Sprintf("reference=$%d", argId))
+		args = append(args, inp.Reference)
+		argId++
 	}
 
 	if inp.Time != 0 {
-		setValues = append(setValues, fmt.Sprintf("noty_time=:noty_time"))
+		setValues = append(setValues, fmt.Sprintf("noty_time=$%d", argId))
+		args = append(args, inp.Time)
+		argId++
 	}
+
+	if inp.PartnerId != 0 {
+		setValues = append(setValues, fmt.Sprintf("partner_id=$%d", argId))
+		args = append(args, inp.PartnerId)
+		argId++
+	}
+	fmt.Println("sds")
 
 	setQuery := strings.Join(setValues, ", ")
 
-	if setQuery == "" {
-		return errors.New("empty body")
-	}
+	query := fmt.Sprintf(`UPDATE %s SET %s WHERE id = $%d `, notifications, setQuery, argId)
+	args = append(args, id)
 
-	query := fmt.Sprintf("UPDATE %s SET %s WHERE id=%d", notifications, setQuery, id)
-
-	result, err := n.db.NamedExec(query, inp)
-
-	if err != nil {
-		return fmt.Errorf("repository.Update: %w", err)
-	}
+	result, err := n.db.Exec(query, args...)
 
 	affected, err := result.RowsAffected()
 	if err != nil {
@@ -247,9 +277,10 @@ func (n *NotificationRepos) Update(id int, inp domain.Notification) error {
 
 	if affected == 0 {
 		return fmt.Errorf("repository.Update: %w", domain.ErrNotFound)
+
 	}
 
-	return nil
+	return err
 
 }
 

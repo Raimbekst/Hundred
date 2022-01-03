@@ -1,16 +1,14 @@
-CREATE TYPE status_noty_privileges AS ENUM ('отправлено','запланировано');
-CREATE TYPE get_notification_privileges AS ENUM ('все','выборочно');
 CREATE TABLE IF NOT EXISTS notifications(
     id serial not null unique ,
     title varchar(255) not null,
     partner_id int references partners(id) on delete cascade,
     text text,
     link text,
-    status status_noty_privileges,
-    noty_getters get_notification_privileges,
+    status int check (notifications.status >= 1 and 2 >= notifications.status),
+    noty_getters int check ( notifications.noty_getters >= 1 and 2 >= notifications.noty_getters ),
     reference text,
-    noty_date date,
-    noty_time float
+    noty_date timestamp,
+    noty_time int
 );
 
 CREATE TABLE IF NOT EXISTS getters(

@@ -115,7 +115,6 @@ func (u *UserAuthRepos) SignIn(phone, password string) (*domain.User, error) {
 	if err != nil {
 		return nil, fmt.Errorf("repository.SignIn: %w", domain.ErrUserNotExist)
 	}
-	fmt.Println(input)
 	if input.IsBlocked {
 		return nil, fmt.Errorf("repository.SignIn: %w", domain.ErrUserBlocked)
 	}

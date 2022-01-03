@@ -191,7 +191,7 @@ definitions:
       date:
         type: number
       getters:
-        type: string
+        type: integer
       id:
         type: integer
       ids:
@@ -200,23 +200,24 @@ definitions:
         type: array
       link:
         type: string
+      logo:
+        type: string
       partner_id:
         type: integer
       reference:
         type: string
       status:
-        type: string
+        type: integer
       text:
         type: string
       time:
-        type: number
+        type: integer
       title:
         type: string
       users:
-        $ref: '#/definitions/domain.GetterList'
-    required:
-    - text
-    - title
+        items:
+          $ref: '#/definitions/domain.GetterList'
+        type: array
     type: object
   domain.PaginationPage:
     properties:
@@ -422,7 +423,7 @@ definitions:
       text:
         type: string
       time:
-        type: number
+        type: integer
       title:
         type: string
     required:
@@ -2382,12 +2383,53 @@ paths:
             $ref: '#/definitions/v1.response'
       tags:
       - notification
+    put:
+      consumes:
+      - application/json
+      description: update  notification
+      parameters:
+      - description: notification id
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: notification
+        in: body
+        name: input
+        schema:
+          $ref: '#/definitions/v1.Notification'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/v1.okResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/v1.response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/v1.response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/v1.response'
+        default:
+          description: ""
+          schema:
+            $ref: '#/definitions/v1.response'
+      security:
+      - User_Auth: []
+      tags:
+      - notification
   /notification/all:
     post:
       consumes:
       - application/json
       description: create notification for all users
-      operationId: createNotyForAllUsers
       parameters:
       - description: notification
         in: body
