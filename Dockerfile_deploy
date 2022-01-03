@@ -1,0 +1,25 @@
+FROM golang:1.16-alpine AS builder
+
+RUN go version
+RUN apk add git
+
+COPY ./ /github.com/Raimbekst/HundredToFive
+WORKDIR /github.com/Raimbekst/HundredToFive
+
+RUN go mod download
+RUN CGO_ENABLED=0 GOOS=linux go build -o ./.bin/app ./cmd/app/main.go
+
+#lightweight docker container with binary
+FROM alpine:latest
+
+RUN apk --no-cache add ca-certificates
+WORKDIR /root/
+
+COPY --from=0 /github.com/Raimbekst/HundredToFive/.bin/app .
+COPY --from=0 /github.com/Raimbekst/HundredToFive/internal/config/ ./config/
+
+
+EXPOSE 8080
+
+RUN chmod +x ./app
+CMD [ "./app"]

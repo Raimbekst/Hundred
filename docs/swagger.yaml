@@ -1,0 +1,3244 @@
+basePath: /api/v1/
+definitions:
+  domain.AboutUs:
+    properties:
+      facebook_link:
+        type: string
+      instagram_link:
+        type: string
+      phone_number:
+        type: string
+      phone_number_2:
+        type: string
+      telegram_link:
+        type: string
+      tiktok_link:
+        type: string
+      whatsapp_link:
+        type: string
+      youtube_link:
+        type: string
+    type: object
+  domain.Banner:
+    properties:
+      id:
+        type: integer
+      iframe:
+        type: string
+      image:
+        type: string
+      name:
+        type: string
+      status:
+        type: integer
+    type: object
+  domain.CheckImage:
+    properties:
+      check_id:
+        type: integer
+      check_image:
+        type: string
+      id:
+        type: integer
+    type: object
+  domain.City:
+    properties:
+      id:
+        type: integer
+      name:
+        type: string
+    type: object
+  domain.DayInput:
+    properties:
+      created_at:
+        type: number
+    type: object
+  domain.Description:
+    properties:
+      caption:
+        type: string
+      id:
+        type: integer
+      text:
+        type: string
+    type: object
+  domain.EmailInput:
+    properties:
+      email:
+        type: string
+    required:
+    - email
+    type: object
+  domain.Faq:
+    properties:
+      answer:
+        type: string
+      id:
+        type: integer
+      question:
+        type: string
+    type: object
+  domain.GetAllBannersCategoryResponse:
+    properties:
+      data:
+        items:
+          $ref: '#/definitions/domain.Banner'
+        type: array
+      page-info:
+        $ref: '#/definitions/domain.PaginationPage'
+    type: object
+  domain.GetAllChecksCategoryResponse:
+    properties:
+      data:
+        items:
+          $ref: '#/definitions/domain.UserChecks'
+        type: array
+      page-info:
+        $ref: '#/definitions/domain.PaginationPage'
+    type: object
+  domain.GetAllCityCategoryResponse:
+    properties:
+      data:
+        items:
+          $ref: '#/definitions/domain.City'
+        type: array
+      page-info:
+        $ref: '#/definitions/domain.PaginationPage'
+    type: object
+  domain.GetAllDaysResponse:
+    properties:
+      data:
+        items:
+          $ref: '#/definitions/domain.DayInput'
+        type: array
+      page-info:
+        $ref: '#/definitions/domain.PaginationPage'
+    type: object
+  domain.GetAllDescCategoryResponse:
+    properties:
+      data:
+        items:
+          $ref: '#/definitions/domain.Description'
+        type: array
+      page-info:
+        $ref: '#/definitions/domain.PaginationPage'
+    type: object
+  domain.GetAllFaqsCategoryResponse:
+    properties:
+      data:
+        items:
+          $ref: '#/definitions/domain.Faq'
+        type: array
+      page-info:
+        $ref: '#/definitions/domain.PaginationPage'
+    type: object
+  domain.GetAllNotificationsResponse:
+    properties:
+      data:
+        items:
+          $ref: '#/definitions/domain.Notification'
+        type: array
+      page-info:
+        $ref: '#/definitions/domain.PaginationPage'
+    type: object
+  domain.GetAllPartnersCategoryResponse:
+    properties:
+      data:
+        items:
+          $ref: '#/definitions/domain.Partner'
+        type: array
+      page-info:
+        $ref: '#/definitions/domain.PaginationPage'
+    type: object
+  domain.GetAllRaffleCategoryResponse:
+    properties:
+      data:
+        items:
+          $ref: '#/definitions/domain.Raffle'
+        type: array
+      page-info:
+        $ref: '#/definitions/domain.PaginationPage'
+    type: object
+  domain.GetAllUsersCategoryResponse:
+    properties:
+      data:
+        items:
+          $ref: '#/definitions/domain.UserList'
+        type: array
+      page-info:
+        $ref: '#/definitions/domain.PaginationPage'
+    type: object
+  domain.GetAllWinnersCategoryResponse:
+    properties:
+      data:
+        items:
+          $ref: '#/definitions/domain.Winners'
+        type: array
+      page-info:
+        $ref: '#/definitions/domain.PaginationPage'
+    type: object
+  domain.GetterList:
+    properties:
+      id:
+        type: integer
+      notification_id:
+        type: integer
+      user_id:
+        type: integer
+    type: object
+  domain.Notification:
+    properties:
+      date:
+        type: number
+      getters:
+        type: string
+      id:
+        type: integer
+      ids:
+        items:
+          type: integer
+        type: array
+      link:
+        type: string
+      partner_id:
+        type: integer
+      reference:
+        type: string
+      status:
+        type: string
+      text:
+        type: string
+      time:
+        type: number
+      title:
+        type: string
+      users:
+        $ref: '#/definitions/domain.GetterList'
+    required:
+    - text
+    - title
+    type: object
+  domain.PaginationPage:
+    properties:
+      count:
+        type: integer
+      page:
+        type: integer
+      pages:
+        type: integer
+    type: object
+  domain.Partner:
+    properties:
+      banner:
+        type: string
+      end_partnership:
+        type: string
+      id:
+        type: integer
+      linkWebsite:
+        type: string
+      logo:
+        type: string
+      name:
+        type: string
+      partner_package:
+        type: string
+      position:
+        type: integer
+      reference:
+        type: string
+      start_partnership:
+        type: string
+      status:
+        type: integer
+    type: object
+  domain.Raffle:
+    properties:
+      check_category:
+        type: integer
+      check_id:
+        type: integer
+      id:
+        type: integer
+      phone_number:
+        type: string
+      raffle_date:
+        type: number
+      raffle_time:
+        type: integer
+      raffle_type:
+        type: integer
+      reference:
+        type: string
+      status:
+        type: string
+      user_name:
+        type: string
+    type: object
+  domain.UserChecks:
+    properties:
+      check_amount:
+        type: string
+      check_date:
+        type: number
+      check_image:
+        items:
+          $ref: '#/definitions/domain.CheckImage'
+        type: array
+      id:
+        type: integer
+      is_blocked:
+        type: boolean
+      partner_name:
+        type: string
+      phone_number:
+        type: string
+      registered_at:
+        type: number
+      user_id:
+        type: integer
+      user_name:
+        type: string
+    type: object
+  domain.UserList:
+    properties:
+      age:
+        type: integer
+      city:
+        type: string
+      email:
+        type: string
+      gender:
+        type: string
+      id:
+        type: integer
+      is_blocked:
+        type: boolean
+      name:
+        type: string
+      phone_number:
+        type: string
+      registered_at:
+        type: number
+    type: object
+  domain.WinnerInput:
+    properties:
+      check_id:
+        type: integer
+      end_check_date:
+        type: number
+      end_register_date:
+        type: number
+      money_amount:
+        type: integer
+      partner_id:
+        type: integer
+      raffle_id:
+        type: integer
+      start_check_date:
+        type: number
+      start_register_date:
+        type: number
+    required:
+    - check_id
+    - raffle_id
+    type: object
+  domain.Winners:
+    properties:
+      check_id:
+        type: integer
+      id:
+        type: integer
+      is_winner:
+        type: boolean
+      phone_number:
+        type: string
+      raffle_date:
+        type: number
+      raffle_type:
+        type: string
+      user_name:
+        type: string
+    type: object
+  v1.AdminSignUpInput:
+    properties:
+      confirm_password:
+        type: string
+      email:
+        type: string
+      name:
+        type: string
+      password:
+        maxLength: 64
+        minLength: 8
+        type: string
+      phone_number:
+        type: string
+    required:
+    - confirm_password
+    - email
+    - name
+    - password
+    - phone_number
+    type: object
+  v1.City:
+    properties:
+      name:
+        type: string
+    required:
+    - name
+    type: object
+  v1.Condition:
+    properties:
+      caption:
+        type: string
+      text:
+        type: string
+    type: object
+  v1.Description:
+    properties:
+      caption:
+        type: string
+      text:
+        type: string
+    type: object
+  v1.Faq:
+    properties:
+      answer:
+        type: string
+      question:
+        type: string
+    type: object
+  v1.Notification:
+    properties:
+      date:
+        type: number
+      link:
+        type: string
+      partner_id:
+        type: integer
+      reference:
+        type: string
+      text:
+        type: string
+      time:
+        type: number
+      title:
+        type: string
+    required:
+    - text
+    - title
+    type: object
+  v1.NotificationForUser:
+    properties:
+      link:
+        type: string
+      text:
+        type: string
+      title:
+        type: string
+      user_ids:
+        items:
+          type: integer
+        type: array
+    required:
+    - text
+    - title
+    - user_ids
+    type: object
+  v1.Raffle:
+    properties:
+      check_category:
+        type: integer
+      raffle_date:
+        type: number
+      raffle_time:
+        type: integer
+      raffle_type:
+        default: 1
+        enum:
+        - 1
+        - 2
+        - 3
+        example: 1
+        type: integer
+      reference:
+        type: string
+    required:
+    - check_category
+    - raffle_date
+    - raffle_time
+    - raffle_type
+    type: object
+  v1.RegistrationTokenInput:
+    properties:
+      registration_token:
+        type: string
+    required:
+    - registration_token
+    type: object
+  v1.ResetPasswordInput:
+    properties:
+      new_password:
+        maxLength: 64
+        minLength: 8
+        type: string
+      new_password_confirm:
+        type: string
+      token:
+        type: string
+    required:
+    - new_password
+    - new_password_confirm
+    - token
+    type: object
+  v1.TokenAuth:
+    properties:
+      token:
+        type: string
+    type: object
+  v1.UserSignUpInput:
+    properties:
+      age:
+        type: integer
+      city:
+        type: integer
+      confirm_password:
+        type: string
+      email:
+        type: string
+      gender:
+        maximum: 2
+        minimum: 1
+        type: integer
+      name:
+        type: string
+      password:
+        maxLength: 64
+        minLength: 8
+        type: string
+      phone_number:
+        type: string
+    required:
+    - age
+    - city
+    - confirm_password
+    - email
+    - gender
+    - name
+    - password
+    - phone_number
+    type: object
+  v1.idResponse:
+    properties:
+      id: {}
+    type: object
+  v1.okResponse:
+    properties:
+      message:
+        type: string
+    type: object
+  v1.refreshInput:
+    properties:
+      token:
+        type: string
+    required:
+    - token
+    type: object
+  v1.response:
+    properties:
+      detail:
+        type: string
+    type: object
+  v1.signInInput:
+    properties:
+      password:
+        type: string
+      phone_number:
+        type: string
+    required:
+    - password
+    - phone_number
+    type: object
+  v1.tokenResponse:
+    properties:
+      access:
+        type: string
+      refresh:
+        type: string
+    type: object
+host: localhost:8080
+info:
+  contact:
+    email: fiber@swagger.io
+    name: API Support
+  description: API Server for  A Hundred to Five
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  termsOfService: http://swagger.io/terms/
+  title: A Hundred to Five
+  version: "2.0"
+paths:
+  /admin/sign-up:
+    post:
+      consumes:
+      - application/json
+      description: create Admin
+      parameters:
+      - description: admin sign-up
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/v1.AdminSignUpInput'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/v1.idResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/v1.response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/v1.response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/v1.response'
+        default:
+          description: ""
+          schema:
+            $ref: '#/definitions/v1.response'
+      tags:
+      - auth
+  /auth/block-user/{id}:
+    put:
+      consumes:
+      - application/json
+      description: block users
+      parameters:
+      - description: user id
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/v1.okResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/v1.response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/v1.response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/v1.response'
+        default:
+          description: ""
+          schema:
+            $ref: '#/definitions/v1.response'
+      security:
+      - User_Auth: []
+      tags:
+      - auth
+  /auth/download/users:
+    get:
+      description: download members to excel
+      operationId: downloadUsers
+      produces:
+      - application/octet-stream
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: file
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/v1.response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/v1.response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/v1.response'
+        default:
+          description: ""
+          schema:
+            $ref: '#/definitions/v1.response'
+      tags:
+      - auth
+  /auth/refresh:
+    post:
+      description: refresh token
+      parameters:
+      - description: refresh info
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/v1.refreshInput'
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/v1.tokenResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/v1.response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/v1.response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/v1.response'
+        default:
+          description: ""
+          schema:
+            $ref: '#/definitions/v1.response'
+      tags:
+      - auth
+  /auth/reset-password:
+    post:
+      consumes:
+      - application/json
+      description: reset password
+      parameters:
+      - description: 'reset password '
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/v1.ResetPasswordInput'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/v1.okResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/v1.response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/v1.response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/v1.response'
+        default:
+          description: ""
+          schema:
+            $ref: '#/definitions/v1.response'
+      tags:
+      - auth
+  /auth/sign-in:
+    post:
+      consumes:
+      - application/json
+      description: user sign in
+      parameters:
+      - description: sign in info
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/v1.signInInput'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/v1.tokenResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/v1.response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/v1.response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/v1.response'
+        default:
+          description: ""
+          schema:
+            $ref: '#/definitions/v1.response'
+      tags:
+      - auth
+  /auth/sign-up:
+    post:
+      consumes:
+      - application/json
+      description: create member account
+      parameters:
+      - description: user sign-up
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/v1.UserSignUpInput'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/v1.idResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/v1.response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/v1.response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/v1.response'
+        default:
+          description: ""
+          schema:
+            $ref: '#/definitions/v1.response'
+      tags:
+      - auth
+  /auth/unblock-user/{id}:
+    put:
+      consumes:
+      - application/json
+      description: unblock users
+      parameters:
+      - description: user id
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/v1.okResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/v1.response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/v1.response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/v1.response'
+        default:
+          description: ""
+          schema:
+            $ref: '#/definitions/v1.response'
+      security:
+      - User_Auth: []
+      tags:
+      - auth
+  /auth/user/me:
+    get:
+      consumes:
+      - application/json
+      description: get users info
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/domain.UserList'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/v1.response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/v1.response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/v1.response'
+        default:
+          description: ""
+          schema:
+            $ref: '#/definitions/v1.response'
+      security:
+      - User_Auth: []
+      tags:
+      - auth
+  /auth/users:
+    get:
+      consumes:
+      - application/json
+      description: gets all users
+      operationId: getAllUsers
+      parameters:
+      - in: query
+        minimum: 0
+        name: limit
+        type: integer
+      - in: query
+        minimum: 0
+        name: page
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/domain.GetAllUsersCategoryResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/v1.response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/v1.response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/v1.response'
+        default:
+          description: ""
+          schema:
+            $ref: '#/definitions/v1.response'
+      tags:
+      - auth
+  /auth/verify:
+    post:
+      consumes:
+      - application/json
+      description: reset password
+      parameters:
+      - description: reset password via Email
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/domain.EmailInput'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/v1.TokenAuth'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/v1.response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/v1.response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/v1.response'
+        default:
+          description: ""
+          schema:
+            $ref: '#/definitions/v1.response'
+      tags:
+      - auth
+  /banner:
+    get:
+      consumes:
+      - application/json
+      description: get all banners
+      operationId: get-all-banners
+      parameters:
+      - enum:
+        - 1
+        - 2
+        in: query
+        name: status
+        type: integer
+      - in: query
+        minimum: 0
+        name: limit
+        type: integer
+      - in: query
+        minimum: 0
+        name: page
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/domain.GetAllBannersCategoryResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/v1.response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/v1.response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/v1.response'
+        default:
+          description: ""
+          schema:
+            $ref: '#/definitions/v1.response'
+      tags:
+      - banner
+    post:
+      consumes:
+      - multipart/form-data
+      parameters:
+      - description: name of banner
+        in: formData
+        name: name
+        type: string
+      - description: only 1 or 2
+        enum:
+        - 1
+        - 2
+        in: formData
+        name: status
+        type: integer
+      - description: image
+        in: formData
+        name: image
+        type: file
+      - description: iframe
+        in: formData
+        name: iframe
+        type: string
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/v1.idResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/v1.response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/v1.response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/v1.response'
+        default:
+          description: ""
+          schema:
+            $ref: '#/definitions/v1.response'
+      security:
+      - User_Auth: []
+      tags:
+      - banner
+  /banner/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: delete banner
+      parameters:
+      - description: banner id
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/v1.okResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/v1.response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/v1.response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/v1.response'
+        default:
+          description: ""
+          schema:
+            $ref: '#/definitions/v1.response'
+      security:
+      - User_Auth: []
+      tags:
+      - banner
+    get:
+      consumes:
+      - application/json
+      description: get banner by id
+      operationId: get-banner-by-id
+      parameters:
+      - description: banner id
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/domain.Banner'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/v1.response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/v1.response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/v1.response'
+        default:
+          description: ""
+          schema:
+            $ref: '#/definitions/v1.response'
+      tags:
+      - banner
+    put:
+      consumes:
+      - multipart/form-data
+      description: update  banner
+      parameters:
+      - description: banner id
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: image
+        in: formData
+        name: image
+        type: file
+      - description: iframe
+        in: formData
+        name: iframe
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/v1.okResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/v1.response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/v1.response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/v1.response'
+        default:
+          description: ""
+          schema:
+            $ref: '#/definitions/v1.response'
+      security:
+      - User_Auth: []
+      tags:
+      - banner
+  /check:
+    get:
+      consumes:
+      - application/json
+      description: gets all checks
+      operationId: get-all-checks
+      parameters:
+      - in: query
+        name: end_check_date
+        type: number
+      - in: query
+        name: end_register_date
+        type: number
+      - in: query
+        name: money_amount
+        type: integer
+      - in: query
+        name: partner_id
+        type: integer
+      - in: query
+        name: start_check_date
+        type: number
+      - in: query
+        name: start_register_date
+        type: number
+      - in: query
+        minimum: 0
+        name: limit
+        type: integer
+      - in: query
+        minimum: 0
+        name: page
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/domain.GetAllChecksCategoryResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/v1.response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/v1.response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/v1.response'
+        default:
+          description: ""
+          schema:
+            $ref: '#/definitions/v1.response'
+      tags:
+      - check
+  /check/{id}:
+    get:
+      consumes:
+      - application/json
+      description: get check by id
+      operationId: get-check-by-id
+      parameters:
+      - description: check id
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/domain.UserChecks'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/v1.response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/v1.response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/v1.response'
+        default:
+          description: ""
+          schema:
+            $ref: '#/definitions/v1.response'
+      tags:
+      - check
+  /check/download:
+    get:
+      description: download members to excel
+      operationId: downloadChecks
+      parameters:
+      - in: query
+        name: end_check_date
+        type: number
+      - in: query
+        name: end_register_date
+        type: number
+      - in: query
+        name: money_amount
+        type: integer
+      - in: query
+        name: partner_id
+        type: integer
+      - in: query
+        name: start_check_date
+        type: number
+      - in: query
+        name: start_register_date
+        type: number
+      produces:
+      - application/octet-stream
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: file
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/v1.response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/v1.response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/v1.response'
+        default:
+          description: ""
+          schema:
+            $ref: '#/definitions/v1.response'
+      tags:
+      - check
+  /check/register:
+    post:
+      consumes:
+      - multipart/form-data
+      description: check upload
+      parameters:
+      - description: partner id
+        in: formData
+        name: partner_id
+        required: true
+        type: integer
+      - description: check cash
+        in: formData
+        name: check_amount
+        required: true
+        type: integer
+      - description: date of check
+        in: formData
+        name: check_date
+        required: true
+        type: integer
+      - description: upload checks
+        in: formData
+        name: check_image
+        required: true
+        type: file
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/v1.idResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/v1.response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/v1.response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/v1.response'
+        default:
+          description: ""
+          schema:
+            $ref: '#/definitions/v1.response'
+      security:
+      - User_Auth: []
+      tags:
+      - check
+  /city:
+    get:
+      consumes:
+      - application/json
+      description: get all cities
+      operationId: get-all-cities
+      parameters:
+      - in: query
+        minimum: 0
+        name: limit
+        type: integer
+      - in: query
+        minimum: 0
+        name: page
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/domain.GetAllCityCategoryResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/v1.response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/v1.response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/v1.response'
+        default:
+          description: ""
+          schema:
+            $ref: '#/definitions/v1.response'
+      tags:
+      - city
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: city
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/v1.City'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/v1.idResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/v1.response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/v1.response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/v1.response'
+        default:
+          description: ""
+          schema:
+            $ref: '#/definitions/v1.response'
+      security:
+      - User_Auth: []
+      tags:
+      - city
+  /city/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: delete city
+      parameters:
+      - description: city id
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/v1.okResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/v1.response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/v1.response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/v1.response'
+        default:
+          description: ""
+          schema:
+            $ref: '#/definitions/v1.response'
+      security:
+      - User_Auth: []
+      tags:
+      - city
+    get:
+      consumes:
+      - application/json
+      description: get city by id
+      operationId: get-city-by-id
+      parameters:
+      - description: city id
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/domain.City'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/v1.response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/v1.response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/v1.response'
+        default:
+          description: ""
+          schema:
+            $ref: '#/definitions/v1.response'
+      tags:
+      - city
+    put:
+      consumes:
+      - application/json
+      description: update  city
+      parameters:
+      - description: city id
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: city
+        in: body
+        name: input
+        schema:
+          $ref: '#/definitions/v1.City'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/v1.okResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/v1.response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/v1.response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/v1.response'
+        default:
+          description: ""
+          schema:
+            $ref: '#/definitions/v1.response'
+      security:
+      - User_Auth: []
+      tags:
+      - city
+  /condition:
+    get:
+      consumes:
+      - application/json
+      description: get all conditions
+      operationId: get-all-conditions
+      parameters:
+      - in: query
+        minimum: 0
+        name: limit
+        type: integer
+      - in: query
+        minimum: 0
+        name: page
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/domain.GetAllDescCategoryResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/v1.response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/v1.response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/v1.response'
+        default:
+          description: ""
+          schema:
+            $ref: '#/definitions/v1.response'
+      tags:
+      - condition
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: condition
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/v1.Condition'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/v1.idResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/v1.response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/v1.response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/v1.response'
+        default:
+          description: ""
+          schema:
+            $ref: '#/definitions/v1.response'
+      security:
+      - User_Auth: []
+      tags:
+      - condition
+  /condition/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: delete condition
+      parameters:
+      - description: condition id
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/v1.okResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/v1.response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/v1.response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/v1.response'
+        default:
+          description: ""
+          schema:
+            $ref: '#/definitions/v1.response'
+      security:
+      - User_Auth: []
+      tags:
+      - condition
+    get:
+      consumes:
+      - application/json
+      description: get condition by id
+      operationId: get-condition-by-id
+      parameters:
+      - description: condition id
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/domain.Description'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/v1.response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/v1.response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/v1.response'
+        default:
+          description: ""
+          schema:
+            $ref: '#/definitions/v1.response'
+      tags:
+      - condition
+    put:
+      consumes:
+      - application/json
+      description: update  condition
+      parameters:
+      - description: condition id
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: condition
+        in: body
+        name: input
+        schema:
+          $ref: '#/definitions/v1.Condition'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/v1.okResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/v1.response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/v1.response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/v1.response'
+        default:
+          description: ""
+          schema:
+            $ref: '#/definitions/v1.response'
+      security:
+      - User_Auth: []
+      tags:
+      - condition
+  /days:
+    get:
+      consumes:
+      - application/json
+      description: gets all days
+      operationId: getAllDays
+      parameters:
+      - in: query
+        name: month
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/domain.GetAllDaysResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/v1.response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/v1.response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/v1.response'
+        default:
+          description: ""
+          schema:
+            $ref: '#/definitions/v1.response'
+      tags:
+      - winners
+  /description:
+    get:
+      consumes:
+      - application/json
+      description: get all description
+      operationId: get-all-description
+      parameters:
+      - in: query
+        minimum: 0
+        name: limit
+        type: integer
+      - in: query
+        minimum: 0
+        name: page
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/domain.GetAllDescCategoryResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/v1.response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/v1.response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/v1.response'
+        default:
+          description: ""
+          schema:
+            $ref: '#/definitions/v1.response'
+      tags:
+      - about
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: description
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/v1.Description'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/v1.idResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/v1.response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/v1.response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/v1.response'
+        default:
+          description: ""
+          schema:
+            $ref: '#/definitions/v1.response'
+      security:
+      - User_Auth: []
+      tags:
+      - about
+  /description/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: delete description
+      parameters:
+      - description: description id
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/v1.okResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/v1.response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/v1.response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/v1.response'
+        default:
+          description: ""
+          schema:
+            $ref: '#/definitions/v1.response'
+      security:
+      - User_Auth: []
+      tags:
+      - about
+    get:
+      consumes:
+      - application/json
+      description: get description by id
+      operationId: get-description-by-id
+      parameters:
+      - description: description id
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/domain.Description'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/v1.response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/v1.response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/v1.response'
+        default:
+          description: ""
+          schema:
+            $ref: '#/definitions/v1.response'
+      tags:
+      - about
+    put:
+      consumes:
+      - application/json
+      description: update  description
+      parameters:
+      - description: description id
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: description
+        in: body
+        name: input
+        schema:
+          $ref: '#/definitions/v1.Description'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/v1.okResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/v1.response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/v1.response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/v1.response'
+        default:
+          description: ""
+          schema:
+            $ref: '#/definitions/v1.response'
+      security:
+      - User_Auth: []
+      tags:
+      - about
+  /faq:
+    get:
+      consumes:
+      - application/json
+      description: get all faqs
+      operationId: get-all-faqs
+      parameters:
+      - in: query
+        minimum: 0
+        name: limit
+        type: integer
+      - in: query
+        minimum: 0
+        name: page
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/domain.GetAllFaqsCategoryResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/v1.response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/v1.response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/v1.response'
+        default:
+          description: ""
+          schema:
+            $ref: '#/definitions/v1.response'
+      tags:
+      - faq
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: faq
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/v1.Faq'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/v1.idResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/v1.response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/v1.response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/v1.response'
+        default:
+          description: ""
+          schema:
+            $ref: '#/definitions/v1.response'
+      security:
+      - User_Auth: []
+      tags:
+      - faq
+  /faq/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: delete faq
+      parameters:
+      - description: faq id
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/v1.okResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/v1.response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/v1.response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/v1.response'
+        default:
+          description: ""
+          schema:
+            $ref: '#/definitions/v1.response'
+      security:
+      - User_Auth: []
+      tags:
+      - faq
+    get:
+      consumes:
+      - application/json
+      description: get faq by id
+      operationId: get-faq-by-id
+      parameters:
+      - description: faq id
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/domain.Faq'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/v1.response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/v1.response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/v1.response'
+        default:
+          description: ""
+          schema:
+            $ref: '#/definitions/v1.response'
+      tags:
+      - faq
+    put:
+      consumes:
+      - application/json
+      description: update  faq
+      parameters:
+      - description: faq id
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: faq
+        in: body
+        name: input
+        schema:
+          $ref: '#/definitions/v1.Faq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/v1.okResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/v1.response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/v1.response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/v1.response'
+        default:
+          description: ""
+          schema:
+            $ref: '#/definitions/v1.response'
+      security:
+      - User_Auth: []
+      tags:
+      - faq
+  /members:
+    get:
+      consumes:
+      - application/json
+      description: gets all members
+      operationId: getAllMembers
+      parameters:
+      - in: query
+        name: raffle_id
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/domain.GetAllWinnersCategoryResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/v1.response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/v1.response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/v1.response'
+        default:
+          description: ""
+          schema:
+            $ref: '#/definitions/v1.response'
+      tags:
+      - winners
+  /months:
+    get:
+      consumes:
+      - application/json
+      description: gets all days
+      operationId: getAllMonths
+      parameters:
+      - in: query
+        minimum: 0
+        name: limit
+        type: integer
+      - in: query
+        minimum: 0
+        name: page
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/domain.GetAllDaysResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/v1.response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/v1.response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/v1.response'
+        default:
+          description: ""
+          schema:
+            $ref: '#/definitions/v1.response'
+      tags:
+      - winners
+  /notification:
+    get:
+      consumes:
+      - application/json
+      description: get all notifications
+      operationId: get-all-notifications
+      parameters:
+      - in: query
+        minimum: 0
+        name: limit
+        type: integer
+      - in: query
+        minimum: 0
+        name: page
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/domain.GetAllNotificationsResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/v1.response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/v1.response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/v1.response'
+        default:
+          description: ""
+          schema:
+            $ref: '#/definitions/v1.response'
+      tags:
+      - notification
+  /notification/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: delete notification
+      parameters:
+      - description: notification id
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/v1.okResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/v1.response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/v1.response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/v1.response'
+        default:
+          description: ""
+          schema:
+            $ref: '#/definitions/v1.response'
+      security:
+      - User_Auth: []
+      tags:
+      - notification
+    get:
+      consumes:
+      - application/json
+      description: get notification by id
+      operationId: get-notification-by-id
+      parameters:
+      - description: notification id
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/domain.Notification'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/v1.response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/v1.response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/v1.response'
+        default:
+          description: ""
+          schema:
+            $ref: '#/definitions/v1.response'
+      tags:
+      - notification
+  /notification/all:
+    post:
+      consumes:
+      - application/json
+      description: create notification for all users
+      operationId: createNotyForAllUsers
+      parameters:
+      - description: notification
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/v1.Notification'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/v1.idResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/v1.response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/v1.response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/v1.response'
+        default:
+          description: ""
+          schema:
+            $ref: '#/definitions/v1.response'
+      security:
+      - User_Auth: []
+      tags:
+      - notification
+  /notification/response:
+    post:
+      consumes:
+      - application/json
+      description: accept registration token for push notification
+      operationId: notification-responsible
+      parameters:
+      - description: registration token
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/v1.RegistrationTokenInput'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/v1.okResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/v1.response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/v1.response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/v1.response'
+        default:
+          description: ""
+          schema:
+            $ref: '#/definitions/v1.response'
+      tags:
+      - notification
+  /notification/user:
+    post:
+      consumes:
+      - application/json
+      description: create notification for specific user
+      operationId: createNotyForSpecificUser
+      parameters:
+      - description: notification
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/v1.NotificationForUser'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/v1.idResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/v1.response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/v1.response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/v1.response'
+        default:
+          description: ""
+          schema:
+            $ref: '#/definitions/v1.response'
+      security:
+      - User_Auth: []
+      tags:
+      - notification
+  /partner:
+    get:
+      consumes:
+      - application/json
+      description: get all partners
+      operationId: get-all-partner
+      parameters:
+      - enum:
+        - 1
+        - 2
+        in: query
+        name: status
+        type: integer
+      - in: query
+        minimum: 0
+        name: limit
+        type: integer
+      - in: query
+        minimum: 0
+        name: page
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/domain.GetAllPartnersCategoryResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/v1.response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/v1.response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/v1.response'
+        default:
+          description: ""
+          schema:
+            $ref: '#/definitions/v1.response'
+      tags:
+      - partner
+    post:
+      consumes:
+      - multipart/form-data
+      parameters:
+      - description: partner name
+        in: formData
+        name: partner_name
+        required: true
+        type: string
+      - description: logo
+        in: formData
+        name: logo
+        type: file
+      - description: link_website
+        in: formData
+        name: link_website
+        type: string
+      - description: banner
+        in: formData
+        name: banner
+        type: file
+      - description: position
+        in: formData
+        name: position
+        type: integer
+      - description: only 1 or 2
+        enum:
+        - 1
+        - 2
+        in: formData
+        name: status
+        required: true
+        type: integer
+      - description: start of partnership
+        in: formData
+        name: start_partnership
+        type: string
+      - description: end of partnership
+        in: formData
+        name: end_partnership
+        type: string
+      - description: partner package
+        in: formData
+        name: partner_package
+        type: string
+      - description: reference
+        in: formData
+        name: reference
+        type: string
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/v1.idResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/v1.response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/v1.response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/v1.response'
+        default:
+          description: ""
+          schema:
+            $ref: '#/definitions/v1.response'
+      security:
+      - User_Auth: []
+      tags:
+      - partner
+  /partner/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: delete partner
+      parameters:
+      - description: partner id
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/v1.okResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/v1.response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/v1.response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/v1.response'
+        default:
+          description: ""
+          schema:
+            $ref: '#/definitions/v1.response'
+      security:
+      - User_Auth: []
+      tags:
+      - partner
+    get:
+      consumes:
+      - application/json
+      description: get partner by id
+      operationId: get-partner-by-id
+      parameters:
+      - description: partner id
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/domain.Partner'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/v1.response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/v1.response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/v1.response'
+        default:
+          description: ""
+          schema:
+            $ref: '#/definitions/v1.response'
+      tags:
+      - partner
+    put:
+      consumes:
+      - multipart/form-data
+      description: update  partner
+      parameters:
+      - description: partner id
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: partner name
+        in: formData
+        name: partner_name
+        required: true
+        type: string
+      - description: logo
+        in: formData
+        name: logo
+        required: true
+        type: file
+      - description: link_website
+        in: formData
+        name: linkWebsite
+        type: string
+      - description: banner
+        in: formData
+        name: banner
+        type: file
+      - description: position
+        in: formData
+        name: position
+        type: integer
+      - description: only 1 or 2
+        enum:
+        - 1
+        - 2
+        in: formData
+        name: status
+        type: integer
+      - description: start of partnership
+        in: formData
+        name: start_partnership
+        type: string
+      - description: end of partnership
+        in: formData
+        name: end_partnership
+        type: string
+      - description: partner package
+        in: formData
+        name: partner_package
+        type: string
+      - description: reference
+        in: formData
+        name: reference
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/v1.okResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/v1.response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/v1.response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/v1.response'
+        default:
+          description: ""
+          schema:
+            $ref: '#/definitions/v1.response'
+      security:
+      - User_Auth: []
+      tags:
+      - partner
+  /partner/download:
+    get:
+      description: download members to excel
+      operationId: downloadPartners
+      produces:
+      - application/octet-stream
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: file
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/v1.response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/v1.response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/v1.response'
+        default:
+          description: ""
+          schema:
+            $ref: '#/definitions/v1.response'
+      tags:
+      - partner
+  /raffle:
+    get:
+      consumes:
+      - application/json
+      description: get all raffles
+      operationId: get-all-raffles
+      parameters:
+      - enum:
+        - 1
+        - 2
+        in: query
+        name: is_finished
+        type: integer
+      - in: query
+        name: raffle_date
+        type: number
+      - in: query
+        name: raffle_time
+        type: integer
+      - enum:
+        - 1
+        - 2
+        - 3
+        example: 1
+        in: query
+        name: raffle_type
+        type: integer
+      - in: query
+        minimum: 0
+        name: limit
+        type: integer
+      - in: query
+        minimum: 0
+        name: page
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/domain.GetAllRaffleCategoryResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/v1.response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/v1.response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/v1.response'
+        default:
+          description: ""
+          schema:
+            $ref: '#/definitions/v1.response'
+      tags:
+      - raffle
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: game
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/v1.Raffle'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/v1.idResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/v1.response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/v1.response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/v1.response'
+        default:
+          description: ""
+          schema:
+            $ref: '#/definitions/v1.response'
+      security:
+      - User_Auth: []
+      tags:
+      - raffle
+  /raffle/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: delete raffle
+      parameters:
+      - description: raffle id
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/v1.okResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/v1.response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/v1.response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/v1.response'
+        default:
+          description: ""
+          schema:
+            $ref: '#/definitions/v1.response'
+      security:
+      - User_Auth: []
+      tags:
+      - raffle
+    get:
+      consumes:
+      - application/json
+      description: get raffle by id
+      operationId: get-raffle-by-id
+      parameters:
+      - description: raffle id
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/domain.Raffle'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/v1.response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/v1.response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/v1.response'
+        default:
+          description: ""
+          schema:
+            $ref: '#/definitions/v1.response'
+      tags:
+      - raffle
+    put:
+      consumes:
+      - application/json
+      description: update  raffle
+      parameters:
+      - description: raffle id
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: raffle
+        in: body
+        name: input
+        schema:
+          $ref: '#/definitions/v1.Raffle'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/v1.okResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/v1.response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/v1.response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/v1.response'
+        default:
+          description: ""
+          schema:
+            $ref: '#/definitions/v1.response'
+      security:
+      - User_Auth: []
+      tags:
+      - raffle
+  /website:
+    delete:
+      consumes:
+      - application/json
+      description: delete about
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/v1.okResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/v1.response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/v1.response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/v1.response'
+        default:
+          description: ""
+          schema:
+            $ref: '#/definitions/v1.response'
+      security:
+      - User_Auth: []
+      tags:
+      - about
+    get:
+      consumes:
+      - application/json
+      description: get all website info
+      operationId: get-all-website-info
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/domain.AboutUs'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/v1.response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/v1.response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/v1.response'
+        default:
+          description: ""
+          schema:
+            $ref: '#/definitions/v1.response'
+      tags:
+      - about
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: about website
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/domain.AboutUs'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/v1.idResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/v1.response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/v1.response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/v1.response'
+        default:
+          description: ""
+          schema:
+            $ref: '#/definitions/v1.response'
+      security:
+      - User_Auth: []
+      tags:
+      - about
+    put:
+      consumes:
+      - application/json
+      description: update  info
+      parameters:
+      - description: website info
+        in: body
+        name: input
+        schema:
+          $ref: '#/definitions/domain.AboutUs'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/v1.okResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/v1.response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/v1.response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/v1.response'
+        default:
+          description: ""
+          schema:
+            $ref: '#/definitions/v1.response'
+      security:
+      - User_Auth: []
+      tags:
+      - about
+  /winner:
+    get:
+      consumes:
+      - application/json
+      description: gets all winners
+      operationId: get-all-winners
+      parameters:
+      - in: query
+        name: date
+        type: integer
+      - in: query
+        minimum: 0
+        name: limit
+        type: integer
+      - in: query
+        minimum: 0
+        name: page
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/domain.GetAllWinnersCategoryResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/v1.response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/v1.response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/v1.response'
+        default:
+          description: ""
+          schema:
+            $ref: '#/definitions/v1.response'
+      tags:
+      - winners
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: winners
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/domain.WinnerInput'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/v1.okResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/v1.response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/v1.response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/v1.response'
+        default:
+          description: ""
+          schema:
+            $ref: '#/definitions/v1.response'
+      security:
+      - User_Auth: []
+      tags:
+      - winners
+securityDefinitions:
+  User_Auth:
+    in: header
+    name: Authorization
+    type: apiKey
+swagger: "2.0"
