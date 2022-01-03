@@ -21,7 +21,7 @@ func (c *RaffleRepos) Create(raffle domain.Raffle) (int, error) {
 		`INSERT INTO %s
 						(raffle_date,raffle_time,check_category,raffle_type,status,reference)
 					VALUES
-							(to_timestamp($1)::date,$2, $3, $4, $5, $6) 
+							 to_timestamp($1) at time zone 'GMT',$2, $3, $4, $5, $6) 
 					RETURNING id`, raffles)
 
 	err := c.db.QueryRowx(query, raffle.RaffleDate, raffle.RaffleTime, raffle.CheckCategory, raffle.RaffleType, raffle.Status, raffle.Reference).Scan(&id)
@@ -42,18 +42,20 @@ func (c *RaffleRepos) GetAll(page domain.Pagination, filter domain.FilterForRaff
 		forRaffleValues []string
 		setValues       string
 	)
-
 	isF := map[int]string{1: " = ", 2: " != "}
 
 	if filter.RaffleType != 0 {
 		forRaffleValues = append(forRaffleValues, fmt.Sprintf("r.raffle_type = %d", filter.RaffleType))
 	}
+
 	if filter.RaffleDate != 0 {
-		forRaffleValues = append(forRaffleValues, fmt.Sprintf("r.raffle_date = to_timestamp(%f)::date", filter.RaffleDate))
+		forRaffleValues = append(forRaffleValues, fmt.Sprintf("r.raffle_date = to_timestamp(%f) at time zone 'GMT'", filter.RaffleDate))
 	}
+
 	if filter.RaffleTime != 0 {
 		forRaffleValues = append(forRaffleValues, fmt.Sprintf("r.raffle_time = %d", filter.RaffleTime))
 	}
+
 	if filter.IsFinished != 0 {
 		forRaffleValues = append(forRaffleValues, fmt.Sprintf("r.status %s '%s'", isF[filter.IsFinished], finished))
 	}
@@ -63,6 +65,7 @@ func (c *RaffleRepos) GetAll(page domain.Pagination, filter domain.FilterForRaff
 	if whereClause != "" {
 		setValues = "WHERE " + whereClause
 	}
+	fmt.Println(filter.RaffleDate)
 
 	queryCount := fmt.Sprintf(
 		`SELECT COUNT(*) FROM %s r %s`, raffles, setValues)
@@ -75,6 +78,8 @@ func (c *RaffleRepos) GetAll(page domain.Pagination, filter domain.FilterForRaff
 
 	offset, pagesCount := calculatePagination(&page, count)
 
+	fmt.Println(queryCount)
+	fmt.Println(count)
 	inp := make([]*domain.Raffle, 0, page.Limit)
 	query := fmt.Sprintf(
 		`select 
@@ -85,7 +90,7 @@ func (c *RaffleRepos) GetAll(page domain.Pagination, filter domain.FilterForRaff
 					r.check_category,
 					r.reference,
 					r.check_id,
-					extract(epoch from raffle_date) "raffle_date",
+					extract(epoch from raffle_date::timestamp at time zone 'GMT') "raffle_date",
 					u.phone_number,
 					u.user_name 
 				from 
@@ -130,7 +135,7 @@ func (c *RaffleRepos) GetById(id int) (domain.Raffle, error) {
 					r.status,
 					r.check_category,
 					r.reference,
-					extract(epoch from raffle_date) "raffle_date",
+					extract(epoch from raffle_date::timestamp at time zone 'GMT') "raffle_date",
 					u.phone_number,
 					u.user_name 
 				from 

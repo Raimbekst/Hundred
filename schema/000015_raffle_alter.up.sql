@@ -1,0 +1,1 @@
+ALTER TABLE raffles alter column raffle_date type timestamp

@@ -126,7 +126,7 @@ func (c *CheckRepository) GetAll(ctx *fiber.Ctx, page domain.Pagination, filter 
 
 	forCheckValues = append(forCheckValues, fmt.Sprintf("c.registered_at between to_timestamp(%f)::timestamp and to_timestamp(%f)::timestamp", filter.StartRegisteredDate, filter.EndRegisteredDate))
 
-	forCheckValues = append(forCheckValues, fmt.Sprintf("check_date between to_timestamp(%f)::date and to_timestamp(%f)::date", filter.StartCheckDate, filter.EndCheckDate))
+	forCheckValues = append(forCheckValues, fmt.Sprintf("check_date between to_timestamp(%f) and to_timestamp(%f) at time zone 'GMT'", filter.StartCheckDate, filter.EndCheckDate))
 
 	forCheckValues = append(forCheckValues, fmt.Sprintf("is_winner = %v", false))
 
