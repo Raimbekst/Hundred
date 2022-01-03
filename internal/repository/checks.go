@@ -150,9 +150,10 @@ func (c *CheckRepository) GetAll(ctx *fiber.Ctx, page domain.Pagination, filter 
 	checkImage := make([]*domain.UserChecks, 0, page.Limit)
 
 	query := fmt.Sprintf(
+
 		`SELECT 
 					c.user_id, 
-					extract(epoch from c.check_date) "check_date",
+					extract(epoch from c.check_date::timestamp at time zone 'GMT') "check_date",
 					c.id,
 					extract(epoch from c.registered_at) "registered_at", 
 					c.check_amount,
@@ -217,7 +218,7 @@ func (c *CheckRepository) GetById(ctx *fiber.Ctx, id int) (*domain.UserChecks, e
 	query := fmt.Sprintf(
 		`SELECT 
 					c.user_id, 
-					extract(epoch from c.check_date) "check_date",
+					extract(epoch from c.check_date::timestamp at time zone 'GMT') "check_date",
 					c.id,
 					extract(epoch from c.registered_at) "registered_at", 
 					c.check_amount,
