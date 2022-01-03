@@ -228,6 +228,7 @@ func (h *Handler) getAllNotifications(c *fiber.Ctx) error {
 // @Failure default {object} response
 // @Router /notification/{id} [get]
 func (h *Handler) getNotificationById(c *fiber.Ctx) error {
+	url := c.BaseURL()
 	id, err := strconv.Atoi(c.Params("id"))
 	if err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(response{Message: err.Error()})
@@ -240,6 +241,11 @@ func (h *Handler) getNotificationById(c *fiber.Ctx) error {
 		}
 		return c.Status(fiber.StatusInternalServerError).JSON(response{Message: err.Error()})
 	}
+
+	if list.Logo != "" {
+		list.Logo = url + "/" + "media/" + list.Logo
+	}
+
 	return c.Status(fiber.StatusOK).JSON(list)
 }
 
