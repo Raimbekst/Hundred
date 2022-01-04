@@ -3,6 +3,9 @@ package service
 import (
 	"HundredToFive/internal/domain"
 	"HundredToFive/internal/repository"
+	"fmt"
+	"github.com/xuri/excelize/v2"
+	"strconv"
 	"time"
 )
 
@@ -41,6 +44,39 @@ func (r *RaffleService) Create(raffle domain.Raffle) (int, error) {
 
 func (r *RaffleService) GetAll(page domain.Pagination, filter domain.FilterForRaffles) (*domain.GetAllRaffleCategoryResponse, error) {
 	return r.repos.GetAll(page, filter)
+}
+
+func (r *RaffleService) DownloadRaffles(file *excelize.File) (*excelize.File, error) {
+	page := domain.Pagination{}
+	var filter domain.FilterForRaffles
+	list, err := r.repos.GetAll(page, filter)
+
+	if err != nil {
+		return nil, fmt.Errorf("service.DownloadRaffles: %w", err)
+	}
+	id := 2
+	wordNo := "нет"
+	typeGame := map[int]string{1: "Ежедневный розыгрыш", 2: "Еженедельный розыгрыш", 3: "Ежемесячный розыгрыш"}
+	for _, value := range list.Data {
+		unixTime := time.Unix(int64(value.RaffleDate), 0)
+
+		if value.UserName == nil {
+			value.UserName = &wordNo
+		}
+		if value.PhoneNumber == nil {
+			value.PhoneNumber = &wordNo
+		}
+
+		file.SetCellValue("Sheet1", "A"+strconv.Itoa(id), value.Id)
+		file.SetCellValue("Sheet1", "B"+strconv.Itoa(id), *value.UserName)
+		file.SetCellValue("Sheet1", "C"+strconv.Itoa(id), *value.PhoneNumber)
+		file.SetCellValue("Sheet1", "D"+strconv.Itoa(id), unixTime)
+		file.SetCellValue("Sheet1", "E"+strconv.Itoa(id), value.CheckCategory)
+		file.SetCellValue("Sheet1", "F"+strconv.Itoa(id), typeGame[value.RaffleType])
+		file.SetCellValue("Sheet1", "G"+strconv.Itoa(id), value.Status)
+		id = id + 1
+	}
+	return file, nil
 }
 
 func (r *RaffleService) GetById(id int) (domain.Raffle, error) {

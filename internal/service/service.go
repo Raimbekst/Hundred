@@ -115,6 +115,8 @@ type Raffle interface {
 	GetById(id int) (domain.Raffle, error)
 	Update(id int, inp domain.Raffle) error
 	Delete(id int) error
+
+	DownloadRaffles(file *excelize.File) (*excelize.File, error)
 }
 
 type Faq interface {

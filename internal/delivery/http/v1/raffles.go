@@ -2,16 +2,20 @@ package v1
 
 import (
 	"HundredToFive/internal/domain"
+	"HundredToFive/pkg/excel"
 	"HundredToFive/pkg/validation/validationStructs"
+	"bytes"
 	"errors"
 	"github.com/gofiber/fiber/v2"
 	jwtware "github.com/gofiber/jwt/v3"
 	"strconv"
+	"time"
 )
 
 func (h *Handler) initRaffleCategoryRoutes(api fiber.Router) {
 	raffle := api.Group("/raffle")
 	{
+		raffle.Get("/download", h.downloadRaffles)
 		raffle.Get("/", h.getAllRaffles)
 		raffle.Get("/:id", h.getRaffleById)
 		admin := raffle.Group("", jwtware.New(
@@ -110,6 +114,49 @@ func (h *Handler) getAllRaffles(c *fiber.Ctx) error {
 	}
 	return c.Status(fiber.StatusOK).JSON(list)
 
+}
+
+// @Tags raffle
+// @Description download raffles to excel
+// @ID downloadRaffles
+// @Produce application/octet-stream
+// @Success 200 {file} file binary
+// @Failure 400,404 {object} response
+// @Failure 500 {object} response
+// @Failure default {object} response
+// @Router /raffle/download [get]
+func (h *Handler) downloadRaffles(c *fiber.Ctx) error {
+	cellValue := map[string]string{"A1": "id", "B1": "имя пбедителя", "C1": "телефон номера", "D1": "дата розыгрыша", "E1": "категрия чека", "F1": "тип розыгрыша", "G1": "статус"}
+
+	file, err := excel.File(cellValue)
+
+	if err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(response{Message: err.Error()})
+	}
+
+	file, err = h.services.Raffle.DownloadRaffles(file)
+
+	if err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(response{Message: err.Error()})
+	}
+
+	var b bytes.Buffer
+
+	if err := file.Write(&b); err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(response{Message: err.Error()})
+	}
+	downloadName := time.Now().UTC().Format("raffles.xlsx")
+	c.GetRespHeader("Content-Description", "File Transfer")
+	c.GetRespHeader("Content-Type", "application/octet-stream")
+	c.GetRespHeader("Content-Disposition", "attachment; filename="+downloadName)
+
+	err = file.SaveAs(downloadName)
+
+	if err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(response{Message: err.Error()})
+	}
+
+	return c.Download(downloadName)
 }
 
 // @Tags raffle
