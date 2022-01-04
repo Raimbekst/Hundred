@@ -17,8 +17,8 @@ func (w *WinnerService) CreateWinner(input domain.WinnerInput) error {
 	return w.repos.CreateWinner(input)
 }
 
-func (w *WinnerService) GetAll(page domain.Pagination, date int64) (*domain.GetAllWinnersCategoryResponse, error) {
-	return w.repos.GetAll(page, date)
+func (w *WinnerService) GetAll(page domain.Pagination, id int) (*domain.GetAllWinnersCategoryResponse, error) {
+	return w.repos.GetAll(page, id)
 }
 
 func (w *WinnerService) GetAllMembers(page domain.Pagination, id int) (*domain.GetAllWinnersCategoryResponse, error) {

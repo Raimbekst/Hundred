@@ -9,9 +9,6 @@ import (
 )
 
 type (
-	winnersQuery struct {
-		Date int64 `json:"date" query:"date" form:"date"`
-	}
 	raffleFilterQuery struct {
 		RaffleId int `json:"raffle_id" query:"raffle_id" form:"raffle_id"`
 	}
@@ -71,7 +68,7 @@ func (h *Handler) createWinner(c *fiber.Ctx) error {
 	err := h.services.Winner.CreateWinner(input)
 
 	if err != nil {
-		if errors.Is(err, domain.ErrWinnerAlreadyExistInRaffle) {
+		if errors.Is(err, domain.ErrWinnerAlreadyExistInRaffle) || errors.Is(err, domain.ErrCheckBlocked) {
 			return c.Status(fiber.StatusBadRequest).JSON(response{Message: err.Error()})
 		}
 		return c.Status(fiber.StatusInternalServerError).JSON(response{Message: err.Error()})
@@ -86,7 +83,7 @@ func (h *Handler) createWinner(c *fiber.Ctx) error {
 // @ID get-all-winners
 // @Accept json
 // @Produce json
-// @Param filter query winnersQuery true "day winner"
+// @Param filter query raffleFilterQuery true "day winner"
 // @Param array query domain.Pagination  true "A page info"
 // @Success 200 {object} domain.GetAllWinnersCategoryResponse
 // @Failure 400,404 {object} response
@@ -98,13 +95,13 @@ func (h *Handler) getAllWinnersOfToday(c *fiber.Ctx) error {
 	if err := c.QueryParser(&page); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(response{Message: err.Error()})
 	}
-	var filterDate winnersQuery
+	var raffleId raffleFilterQuery
 
-	if err := c.QueryParser(&filterDate); err != nil {
+	if err := c.QueryParser(&raffleId); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(response{Message: err.Error()})
 	}
 
-	list, err := h.services.Winner.GetAll(page, filterDate.Date)
+	list, err := h.services.Winner.GetAll(page, raffleId.RaffleId)
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(response{Message: err.Error()})
 	}

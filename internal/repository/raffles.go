@@ -161,7 +161,7 @@ func (c *RaffleRepos) Update(id int, inp domain.Raffle) error {
 	argId := 1
 
 	if inp.RaffleDate != 0 {
-		setValues = append(setValues, fmt.Sprintf("raffle_date=to_timestamp($%d)::date", argId))
+		setValues = append(setValues, fmt.Sprintf("raffle_date = to_timestamp($%d) at time zone 'GMT'", argId))
 		args = append(args, inp.RaffleDate)
 		argId++
 	}

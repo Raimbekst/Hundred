@@ -3206,7 +3206,7 @@ paths:
       operationId: get-all-winners
       parameters:
       - in: query
-        name: date
+        name: raffle_id
         type: integer
       - in: query
         minimum: 0

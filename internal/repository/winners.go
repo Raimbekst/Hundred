@@ -23,11 +23,24 @@ func (w *WinnerRepos) CreateWinner(input domain.WinnerInput) error {
 		inp             []*domain.CheckInfo
 		raffleMembers   []*domain.Members
 		raffleList      domain.Raffle
+		blockedCheck    domain.UserChecks
 		err             error
 		whereClause     string
 		forRaffleValues []string
 		setValues       string
 	)
+
+	queryCheckIsBlocked := fmt.Sprintf("SELECT u.is_blocked FROM %s c INNER JOIN %s u on c.user_id = u.id WHERE c.id = $1", checks, usersTable)
+
+	err = w.db.Get(&blockedCheck, queryCheckIsBlocked, input.CheckId)
+
+	if err != nil {
+		return fmt.Errorf("repository.CreateWinner:%w", err)
+	}
+
+	if blockedCheck.IsBlocked {
+		return fmt.Errorf("repository.CreateWinner:%w", domain.ErrCheckBlocked)
+	}
 
 	if input.EndCheckDate == 0 {
 		input.EndCheckDate = float64(time.Now().Unix())
@@ -37,35 +50,31 @@ func (w *WinnerRepos) CreateWinner(input domain.WinnerInput) error {
 	}
 
 	if input.PartnerId != 0 {
-		forRaffleValues = append(forRaffleValues, fmt.Sprintf("partner_id = %d", input.PartnerId))
+		forRaffleValues = append(forRaffleValues, fmt.Sprintf("c.partner_id = %d", input.PartnerId))
 	}
 
-	forRaffleValues = append(forRaffleValues, fmt.Sprintf("check_amount <= %d", input.MoneyAmount))
+	forRaffleValues = append(forRaffleValues, fmt.Sprintf("c.check_amount <= %d", input.MoneyAmount))
 
-	forRaffleValues = append(forRaffleValues, fmt.Sprintf("registered_at between to_timestamp(%f)::timestamp and to_timestamp(%f)::timestamp", input.StartRegisteredDate, input.EndRegisteredDate))
+	forRaffleValues = append(forRaffleValues, fmt.Sprintf("u.is_blocked = %s", false))
 
-	forRaffleValues = append(forRaffleValues, fmt.Sprintf("check_date between to_timestamp(%f)::date and to_timestamp(%f)::date", input.StartCheckDate, input.EndCheckDate))
-	forRaffleValues = append(forRaffleValues, fmt.Sprintf("is_winner = %s", false))
+	forRaffleValues = append(forRaffleValues, fmt.Sprintf("c.registered_at between to_timestamp(%f)::timestamp and to_timestamp(%f)::timestamp", input.StartRegisteredDate, input.EndRegisteredDate))
+
+	forRaffleValues = append(forRaffleValues, fmt.Sprintf("c.check_date between to_timestamp(%f) and to_timestamp(%f) at time zone 'GMT'", input.StartCheckDate, input.EndCheckDate))
+	forRaffleValues = append(forRaffleValues, fmt.Sprintf("c.is_winner = %s", false))
 	whereClause = strings.Join(forRaffleValues, " AND ")
 
 	if whereClause != "" {
 		setValues = "WHERE " + whereClause
 	}
 
-	queryGetAllMembers := fmt.Sprintf(
-		`SELECT 
-				  	id  
-				FROM 
-					%s
-				%s
-				`, checks, setValues)
+	queryGetAllMembers := fmt.Sprintf(`SELECT c.id FROM %s c INNER JOIN %s u on c.user_id = u.id %s`, checks, usersTable, setValues)
 
 	err = w.db.Select(&inp, queryGetAllMembers)
 
 	if err != nil {
 		return fmt.Errorf("repository.CreateWinner:%w", err)
 	}
-
+	
 	queryCheckExistWinner := fmt.Sprintf("SELECT check_id FROM %s WHERE id = $1", raffles)
 
 	err = w.db.Get(&raffleList, queryCheckExistWinner, input.RaffleId)
@@ -73,7 +82,7 @@ func (w *WinnerRepos) CreateWinner(input domain.WinnerInput) error {
 	if err != nil {
 		return fmt.Errorf("repository.CreateWinner:%w", err)
 	}
-	logger.Info(raffleList.CheckId)
+
 	if raffleList.CheckId != nil {
 		return fmt.Errorf("repository.CreateWinner: %w", domain.ErrWinnerAlreadyExistInRaffle)
 	}
@@ -152,16 +161,16 @@ func (w *WinnerRepos) CreateWinner(input domain.WinnerInput) error {
 
 }
 
-func (w *WinnerRepos) GetAll(page domain.Pagination, date int64) (*domain.GetAllWinnersCategoryResponse, error) {
+func (w *WinnerRepos) GetAll(page domain.Pagination, id int) (*domain.GetAllWinnersCategoryResponse, error) {
 
 	var (
 		setValues string
 
 		count int
 	)
-	logger.Info(date)
-	if date != 0 {
-		setValues = fmt.Sprintf("WHERE date(r.raffle_date) = to_timestamp(%d)::date", date)
+
+	if id != 0 {
+		setValues = fmt.Sprintf("WHERE r.id = %d", id)
 	}
 
 	queryCount := fmt.Sprintf(`SELECT COUNT(*) FROM %s r INNER JOIN %s ch on (r.check_id = ch.id and ch.is_winner) %s`, raffles, checks, setValues)
@@ -286,12 +295,22 @@ func (w *WinnerRepos) GetAllMembers(page domain.Pagination, id int) (*domain.Get
 
 func (w *WinnerRepos) GetAllDays(page domain.Pagination, month int) (*domain.GetAllDaysResponse, error) {
 	var (
-		setValues string
-		count     int
+		setValues   string
+		daysList    []string
+		whereClause string
+		count       int
 	)
 
+	daysList = append(daysList, fmt.Sprintf("status = '%s'", finished))
+
 	if month != 0 {
-		setValues = fmt.Sprintf("WHERE extract(month from raffle_date) = %d", month)
+		daysList = append(daysList, fmt.Sprintf("extract(month from raffle_date) = %d", month))
+	}
+
+	whereClause = strings.Join(daysList, " AND ")
+
+	if whereClause != "" {
+		setValues = "WHERE " + whereClause
 	}
 
 	queryCount := fmt.Sprintf("SELECT count( distinct raffle_date) FROM %s %s", raffles, setValues)
@@ -307,6 +326,7 @@ func (w *WinnerRepos) GetAllDays(page domain.Pagination, month int) (*domain.Get
 	inp := make([]*domain.DayInput, 0, page.Limit)
 
 	query := fmt.Sprintf("SELECT extract(epoch from raffle_date) as created_at from %s %s group by raffle_date ORDER BY created_at DESC LIMIT $1 OFFSET $2", raffles, setValues)
+
 	err = w.db.Select(&inp, query, page.Limit, offset)
 
 	if err != nil {

@@ -11,4 +11,5 @@ var (
 	ErrUserBlocked                = errors.New("пользователь заблокирован")
 	ErrWinnerAlreadyExistInRaffle = errors.New("Розыгрыш имеет победителя ")
 	ErrUpdateNotification         = errors.New("изменить отправленный уведомлений не получается")
+	ErrCheckBlocked               = errors.New("чек заблокирован")
 )

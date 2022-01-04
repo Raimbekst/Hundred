@@ -4100,7 +4100,7 @@ var doc = `{
                 "parameters": [
                     {
                         "type": "integer",
-                        "name": "date",
+                        "name": "raffle_id",
                         "in": "query"
                     },
                     {

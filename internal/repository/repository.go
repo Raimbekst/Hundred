@@ -88,7 +88,7 @@ type Check interface {
 
 type Winner interface {
 	CreateWinner(input domain.WinnerInput) error
-	GetAll(page domain.Pagination, date int64) (*domain.GetAllWinnersCategoryResponse, error)
+	GetAll(page domain.Pagination, id int) (*domain.GetAllWinnersCategoryResponse, error)
 	GetAllMembers(page domain.Pagination, id int) (*domain.GetAllWinnersCategoryResponse, error)
 	GetAllDays(page domain.Pagination, month int) (*domain.GetAllDaysResponse, error)
 	GetAllMonths(page domain.Pagination) (*domain.GetAllDaysResponse, error)
