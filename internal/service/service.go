@@ -152,6 +152,8 @@ type Notification interface {
 	Delete(id int) error
 
 	StoreUsersToken(token string) (int, error)
+
+	DownloadNotification(file *excelize.File) (*excelize.File, error)
 }
 
 type Condition interface {

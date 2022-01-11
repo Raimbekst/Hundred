@@ -17,23 +17,27 @@ func NewNotificationRepos(db *sqlx.DB) *NotificationRepos {
 }
 
 func (n *NotificationRepos) Create(noty domain.Notification) (int, error) {
+
 	var id int
+
 	query := fmt.Sprintf(
 		`INSERT INTO 
-							%s
-						(title,text,partner_id,link,reference,noty_date,noty_time,status,noty_getters) 
-							VALUES
-						($1,$2,$3,$4,$5,to_timestamp($6) at time zone 'GMT',$7,$8,$9) RETURNING id`, notifications)
+						%s
+					(title,text,partner_id,link,reference,noty_date,noty_time,status,noty_getters)	
+						VALUES
+					($1,$2,$3,$4,$5,to_timestamp($6) at time zone 'GMT',$7,$8,$9) RETURNING id`, notifications)
 
 	err := n.db.QueryRowx(query, noty.Title, noty.Text, noty.PartnerId, noty.Link, noty.Reference, noty.Date, noty.Time, noty.Status, noty.Getters).Scan(&id)
 
 	if err != nil {
 		return 0, fmt.Errorf("repository.Create: %w", err)
 	}
+
 	return id, nil
 }
 
 func (n *NotificationRepos) CreateForUser(noty domain.Notification) ([]string, int, error) {
+
 	var (
 		id          int
 		getterUsers []domain.GetterList
@@ -55,7 +59,12 @@ func (n *NotificationRepos) CreateForUser(noty domain.Notification) ([]string, i
 
 	tx := n.db.MustBegin()
 
-	query := fmt.Sprintf("INSERT INTO %s(title,text,link,noty_date,status,noty_getters) VALUES($1,$2,$3,to_timestamp($4)::date,$5,$6) RETURNING id", notifications)
+	query := fmt.Sprintf(
+		`INSERT INTO 
+						%s
+					(title,text,link,noty_date,status,noty_getters)
+						VALUES
+					($1,$2,$3,to_timestamp($4) timestamp at time zone 'GMT',$5,$6) RETURNING id`, notifications)
 
 	err := tx.QueryRowx(query, noty.Title, noty.Text, noty.Link, noty.Date, noty.Status, noty.Getters).Scan(&id)
 

@@ -2,7 +2,9 @@ package v1
 
 import (
 	"HundredToFive/internal/domain"
+	"HundredToFive/pkg/excel"
 	"HundredToFive/pkg/validation/validationStructs"
+	"bytes"
 	"errors"
 	firebase "firebase.google.com/go/v4"
 	"firebase.google.com/go/v4/messaging"
@@ -15,12 +17,13 @@ import (
 )
 
 func (h *Handler) initNotificationRoutes(api fiber.Router) {
-	raffle := api.Group("/notification")
+	noty := api.Group("/notification")
 	{
-		raffle.Get("/", h.getAllNotifications)
-		raffle.Get("/:id", h.getNotificationById)
-		raffle.Post("/response", h.notificationResponse)
-		admin := raffle.Group("", jwtware.New(
+		noty.Get("/", h.getAllNotifications)
+		noty.Get("/:id", h.getNotificationById)
+		noty.Get("/download", h.downloadNotification)
+		noty.Post("/response", h.notificationResponse)
+		admin := noty.Group("", jwtware.New(
 			jwtware.Config{
 				SigningKey: []byte(h.signingKey),
 			}))
@@ -66,7 +69,6 @@ func (h *Handler) createNotyForAllUsers(c *fiber.Ctx) error {
 	if err := c.BodyParser(&input); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(response{Message: err.Error()})
 	}
-	fmt.Println(input)
 
 	ok, errs := validationStructs.ValidateStruct(input)
 
@@ -91,6 +93,7 @@ func (h *Handler) createNotyForAllUsers(c *fiber.Ctx) error {
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(response{Message: err.Error()})
 	}
+
 	return c.Status(fiber.StatusCreated).JSON(idResponse{ID: id})
 }
 
@@ -99,6 +102,11 @@ type NotificationForUser struct {
 	Title   string `json:"title"  validate:"required"`
 	Text    string `json:"text" validate:"required"`
 	Link    string `json:"link" `
+}
+
+type MessageSent struct {
+	Id       int                      `json:"id"`
+	Response *messaging.BatchResponse `json:"response"`
 }
 
 // @Security User_Auth
@@ -119,7 +127,15 @@ func (h *Handler) createNotyForSpecificUser(c *fiber.Ctx) error {
 	if userType != "admin" {
 		return c.Status(fiber.StatusUnauthorized).JSON(response{Message: "нет доступа"})
 	}
+
+	var input NotificationForUser
+
+	if err := c.BodyParser(&input); err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(response{Message: err.Error()})
+	}
+
 	opt := option.WithCredentialsFile("./hundredtofive-1652d-firebase-adminsdk-oecbb-6f47f9aa54.json")
+
 	config := &firebase.Config{ProjectID: "hundredtofive-1652d"}
 
 	app, err := firebase.NewApp(c.Context(), config, opt)
@@ -128,38 +144,27 @@ func (h *Handler) createNotyForSpecificUser(c *fiber.Ctx) error {
 	}
 
 	cl, err := app.Messaging(c.Context())
+
 	if err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(response{Message: err.Error()})
 	}
 
-	// This registration token comes from the client FCM SDKs.
-	registrationToken := "YOUR_REGISTRATION_TOKEN"
+	registrationToken := []string{"YOUR_REGISTRATION_TOKEN"}
 
-	// See documentation on defining a message payload.
-	message := &messaging.Message{
+	message := &messaging.MulticastMessage{
 		Data: map[string]string{
-			"score": "850",
-			"time":  "2:45",
+			"title": input.Title,
+			"text":  input.Text,
+			"link":  input.Link,
 		},
-		Token: registrationToken,
+		Tokens: registrationToken,
 	}
 
-	// Send a message to the device corresponding to the provided
-	// registration token.
-	res, err := cl.Send(c.Context(), message)
+	res, err := cl.SendMulticast(c.Context(), message)
 	if err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(response{Message: err.Error()})
 	}
-	// Response is a message ID string.
-	fmt.Println("Successfully sent message:", res)
 
-	fmt.Println(app)
-
-	var input NotificationForUser
-
-	if err := c.QueryParser(&input); err != nil {
-		return c.Status(fiber.StatusBadRequest).JSON(response{Message: err.Error()})
-	}
 	ok, errs := validationStructs.ValidateStruct(input)
 	if !ok {
 		return c.Status(fiber.StatusBadRequest).JSON(errs)
@@ -181,7 +186,7 @@ func (h *Handler) createNotyForSpecificUser(c *fiber.Ctx) error {
 		return c.Status(fiber.StatusInternalServerError).JSON(response{Message: err.Error()})
 	}
 
-	return c.Status(fiber.StatusCreated).JSON(id)
+	return c.Status(fiber.StatusCreated).JSON(MessageSent{Id: id, Response: res})
 
 }
 
@@ -214,6 +219,50 @@ func (h *Handler) getAllNotifications(c *fiber.Ctx) error {
 	}
 	return c.Status(fiber.StatusOK).JSON(list)
 
+}
+
+// @Tags notification
+// @Description download notifications to excel
+// @ID downloadNotification
+// @Produce application/octet-stream
+// @Success 200 {file} file binary
+// @Failure 400,404 {object} response
+// @Failure 500 {object} response
+// @Failure default {object} response
+// @Router /notification/download [get]
+func (h *Handler) downloadNotification(c *fiber.Ctx) error {
+
+	cellValue := map[string]string{"A1": "id", "B1": "title", "C1": "текст", "D1": "статус", "E1": "ссылка", "F1": "примечение", "G1": "получатели"}
+
+	file, err := excel.File(cellValue)
+
+	if err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(response{Message: err.Error()})
+	}
+
+	file, err = h.services.Notification.DownloadNotification(file)
+
+	if err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(response{Message: err.Error()})
+	}
+
+	var b bytes.Buffer
+
+	if err := file.Write(&b); err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(response{Message: err.Error()})
+	}
+	downloadName := time.Now().UTC().Format("notifications.xlsx")
+	c.GetRespHeader("Content-Description", "File Transfer")
+	c.GetRespHeader("Content-Type", "application/octet-stream")
+	c.GetRespHeader("Content-Disposition", "attachment; filename="+downloadName)
+
+	err = file.SaveAs(downloadName)
+
+	if err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(response{Message: err.Error()})
+	}
+
+	return c.Download(downloadName)
 }
 
 // @Tags notification

@@ -40,7 +40,6 @@ func (c *CheckRepository) Create(info domain.CheckInfo) (int, error) {
 
 		return 0, fmt.Errorf("repository.Create: %w", err)
 	}
-	fmt.Println(id)
 
 	var imageList domain.CheckImage
 
@@ -51,10 +50,6 @@ func (c *CheckRepository) Create(info domain.CheckInfo) (int, error) {
 			imageList.CheckImage = value
 
 			info.CheckImage = append(info.CheckImage, imageList)
-		}
-
-		for _, value := range info.CheckImage {
-			fmt.Println(value)
 		}
 
 		queryCheckImg := fmt.Sprintf(

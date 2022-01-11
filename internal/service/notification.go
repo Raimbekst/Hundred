@@ -3,6 +3,9 @@ package service
 import (
 	"HundredToFive/internal/domain"
 	"HundredToFive/internal/repository"
+	"fmt"
+	"github.com/xuri/excelize/v2"
+	"strconv"
 )
 
 type NotificationService struct {
@@ -22,6 +25,30 @@ func (n *NotificationService) CreateForUser(noty domain.Notification) ([]string,
 
 func (n *NotificationService) GetAll(page domain.Pagination) (*domain.GetAllNotificationsResponse, error) {
 	return n.repos.GetAll(page)
+}
+
+func (n *NotificationService) DownloadNotification(file *excelize.File) (*excelize.File, error) {
+	page := domain.Pagination{}
+	list, err := n.repos.GetAll(page)
+
+	if err != nil {
+		return nil, fmt.Errorf("service.DownloadNotification: %w", err)
+	}
+	id := 2
+
+	getters := map[int]string{1: "все", 2: "выброчно"}
+	for _, value := range list.Data {
+
+		file.SetCellValue("Sheet1", "A"+strconv.Itoa(id), value.Id)
+		file.SetCellValue("Sheet1", "B"+strconv.Itoa(id), value.Title)
+		file.SetCellValue("Sheet1", "C"+strconv.Itoa(id), value.Text)
+		file.SetCellValue("Sheet1", "D"+strconv.Itoa(id), value.Status)
+		file.SetCellValue("Sheet1", "E"+strconv.Itoa(id), value.Link)
+		file.SetCellValue("Sheet1", "F"+strconv.Itoa(id), value.Reference)
+		file.SetCellValue("Sheet1", "G"+strconv.Itoa(id), getters[value.Getters])
+		id = id + 1
+	}
+	return file, nil
 }
 
 func (n *NotificationService) GetById(id int) (*domain.Notification, error) {

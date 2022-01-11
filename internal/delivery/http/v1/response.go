@@ -3,9 +3,7 @@ package v1
 import (
 	"HundredToFive/pkg/logger"
 	"github.com/gofiber/fiber/v2"
-	"github.com/gofiber/websocket/v2"
 	"github.com/golang-jwt/jwt/v4"
-	"log"
 	"strconv"
 )
 
@@ -40,43 +38,4 @@ func getUser(c *fiber.Ctx) (string, int) {
 		return "", 0
 	}
 	return userType, idInt
-}
-
-type client struct{} // Add more data to this type if needed
-
-var (
-	clients    = make(map[*websocket.Conn]client) // Note: although large maps with pointer-like types (e.g. strings) as keys are slow, using pointers themselves as keys is acceptable and fast
-	register   = make(chan *websocket.Conn)
-	broadcast  = make(chan string)
-	unregister = make(chan *websocket.Conn)
-)
-
-func runHub(interface{}) {
-	for {
-		select {
-		case connection := <-register:
-			clients[connection] = client{}
-			log.Println("connection registered")
-
-		case message := <-broadcast:
-			log.Println("message received:", message)
-
-			// Send the message to all clients
-			for connection := range clients {
-				if err := connection.WriteMessage(websocket.TextMessage, []byte(message)); err != nil {
-					log.Println("write error:", err)
-
-					connection.WriteMessage(websocket.CloseMessage, []byte{})
-					connection.Close()
-					delete(clients, connection)
-				}
-			}
-
-		case connection := <-unregister:
-			// Remove the client from the hub
-			delete(clients, connection)
-
-			log.Println("connection unregistered")
-		}
-	}
 }
