@@ -20,8 +20,8 @@ func (h *Handler) initNotificationRoutes(api fiber.Router) {
 	noty := api.Group("/notification")
 	{
 		noty.Get("/", h.getAllNotifications)
-		noty.Get("/:id", h.getNotificationById)
 		noty.Get("/download", h.downloadNotification)
+		noty.Get("/:id", h.getNotificationById)
 		noty.Post("/response", h.notificationResponse)
 		admin := noty.Group("", jwtware.New(
 			jwtware.Config{
@@ -128,10 +128,17 @@ func (h *Handler) createNotyForSpecificUser(c *fiber.Ctx) error {
 		return c.Status(fiber.StatusUnauthorized).JSON(response{Message: "нет доступа"})
 	}
 
+	f := c.Get("Authorization")
+	fmt.Println(f)
 	var input NotificationForUser
 
 	if err := c.BodyParser(&input); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(response{Message: err.Error()})
+	}
+
+	ok, errs := validationStructs.ValidateStruct(input)
+	if !ok {
+		return c.Status(fiber.StatusBadRequest).JSON(errs)
 	}
 
 	opt := option.WithCredentialsFile("./hundredtofive-1652d-firebase-adminsdk-oecbb-6f47f9aa54.json")
@@ -149,7 +156,7 @@ func (h *Handler) createNotyForSpecificUser(c *fiber.Ctx) error {
 		return c.Status(fiber.StatusBadRequest).JSON(response{Message: err.Error()})
 	}
 
-	registrationToken := []string{"YOUR_REGISTRATION_TOKEN"}
+	registrationToken := []string{"e6PDZz6B-fficwwtO6ePWy:APA91bHpqyI084W-jio7_D_wRT9wi3WsWL2bg4p0UVCt2KumkAIuHRmlX3Wc6CFYzsaWoUROps3Y5PNtvbQjIbw_hHTuNmVKQ5A76_3s-IyEOrQsRJcIMhqD5UQngpkNgAz6FeygJ0-4"}
 
 	message := &messaging.MulticastMessage{
 		Data: map[string]string{
@@ -165,28 +172,7 @@ func (h *Handler) createNotyForSpecificUser(c *fiber.Ctx) error {
 		return c.Status(fiber.StatusBadRequest).JSON(response{Message: err.Error()})
 	}
 
-	ok, errs := validationStructs.ValidateStruct(input)
-	if !ok {
-		return c.Status(fiber.StatusBadRequest).JSON(errs)
-	}
-
-	noty := domain.Notification{
-		Title:   input.Title,
-		Text:    input.Text,
-		Link:    input.Link,
-		Status:  2,
-		Getters: 2,
-		Date:    float64(time.Now().Unix()),
-		Ids:     input.UserIds,
-	}
-
-	_, id, err := h.services.Notification.CreateForUser(noty)
-
-	if err != nil {
-		return c.Status(fiber.StatusInternalServerError).JSON(response{Message: err.Error()})
-	}
-
-	return c.Status(fiber.StatusCreated).JSON(MessageSent{Id: id, Response: res})
+	return c.Status(fiber.StatusCreated).JSON(MessageSent{Response: res})
 
 }
 
@@ -397,6 +383,12 @@ type RegistrationTokenInput struct {
 // @Router /notification/response [post]
 func (h *Handler) notificationResponse(c *fiber.Ctx) error {
 
+	var id int = 0
+
+	str := c.Get("")
+
+	fmt.Println(str)
+
 	var input RegistrationTokenInput
 
 	if err := c.BodyParser(&input); err != nil {
@@ -409,10 +401,13 @@ func (h *Handler) notificationResponse(c *fiber.Ctx) error {
 		return c.Status(fiber.StatusBadRequest).JSON(errs)
 	}
 
-	id, err := h.services.Notification.StoreUsersToken(input.RegistrationToken)
+	id, err := h.services.Notification.StoreUsersToken(&id, input.RegistrationToken)
 
 	if err != nil {
-		return c.Status(fiber.StatusBadRequest).JSON(response{Message: err.Error()})
+		if errors.Is(err, domain.ErrTokenAlreadyExist) {
+			return c.Status(fiber.StatusBadRequest).JSON(response{Message: err.Error()})
+		}
+		return c.Status(fiber.StatusInternalServerError).JSON(response{Message: err.Error()})
 	}
 
 	return c.Status(fiber.StatusOK).JSON(idResponse{ID: id})

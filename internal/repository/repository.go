@@ -125,7 +125,7 @@ type Notification interface {
 	Update(id int, inp domain.Notification) error
 	Delete(id int) error
 
-	StoreUsersToken(token string) (int, error)
+	StoreUsersToken(userId *int, token string) (int, error)
 }
 
 type About interface {

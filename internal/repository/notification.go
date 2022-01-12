@@ -308,11 +308,24 @@ func (n *NotificationRepos) Delete(id int) error {
 	return nil
 }
 
-func (n *NotificationRepos) StoreUsersToken(token string) (int, error) {
-	var id int
-	query := fmt.Sprintf("INSERT INTO %s(registration_token) VALUES($1) RETURNING id", notificationTokens)
+func (n *NotificationRepos) StoreUsersToken(userId *int, token string) (int, error) {
+	var (
+		id     int
+		tokens domain.NotificationToken
+	)
 
-	err := n.db.QueryRowx(query, token).Scan(&id)
+	queryCheck := fmt.Sprintf("SELECT id FROM %s WHERE registration_token = $1", notificationTokens)
+
+	err := n.db.Get(&tokens, queryCheck, token)
+	fmt.Println(err)
+
+	if err == nil {
+		return 0, fmt.Errorf("repository.StoreUsersToken: %w", domain.ErrTokenAlreadyExist)
+	}
+
+	query := fmt.Sprintf("INSERT INTO %s(user_id,registration_token) VALUES($1, $2) RETURNING id", notificationTokens)
+
+	err = n.db.QueryRowx(query, userId, token).Scan(&id)
 
 	if err != nil {
 		return 0, fmt.Errorf("repository.StoreUsersToken: %w", err)

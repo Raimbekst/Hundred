@@ -30,5 +30,5 @@ type GetAllNotificationsResponse struct {
 type NotificationToken struct {
 	Id                int    `json:"id" db:"id"`
 	RegistrationToken string `json:"registration_token" db:"registration_token"`
-	UserId            int    `json:"user_id" db:"user_id"`
+	UserId            *int   `json:"user_id" db:"user_id"`
 }

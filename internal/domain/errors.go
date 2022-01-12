@@ -12,4 +12,5 @@ var (
 	ErrWinnerAlreadyExistInRaffle = errors.New("Розыгрыш имеет победителя ")
 	ErrUpdateNotification         = errors.New("изменить отправленный уведомлений не получается")
 	ErrCheckBlocked               = errors.New("чек заблокирован")
+	ErrTokenAlreadyExist          = errors.New("токен уже существует")
 )

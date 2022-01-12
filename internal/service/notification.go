@@ -63,6 +63,6 @@ func (n *NotificationService) Delete(id int) error {
 	return n.repos.Delete(id)
 }
 
-func (n *NotificationService) StoreUsersToken(token string) (int, error) {
-	return n.repos.StoreUsersToken(token)
+func (n *NotificationService) StoreUsersToken(userId *int, token string) (int, error) {
+	return n.repos.StoreUsersToken(userId, token)
 }
