@@ -52,8 +52,10 @@ func (w *WinnerRepos) CreateWinner(input domain.WinnerInput) error {
 	if input.PartnerId != 0 {
 		forRaffleValues = append(forRaffleValues, fmt.Sprintf("c.partner_id = %d", input.PartnerId))
 	}
+	if input.MoneyAmount != 0 {
 
-	forRaffleValues = append(forRaffleValues, fmt.Sprintf("c.check_amount <= %d", input.MoneyAmount))
+		forRaffleValues = append(forRaffleValues, fmt.Sprintf("c.check_amount <= %d", input.MoneyAmount))
+	}
 
 	forRaffleValues = append(forRaffleValues, fmt.Sprintf("u.is_blocked = %s", false))
 
