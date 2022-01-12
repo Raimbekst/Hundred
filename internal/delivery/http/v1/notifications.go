@@ -385,7 +385,7 @@ func (h *Handler) notificationResponse(c *fiber.Ctx) error {
 
 	var id int = 0
 
-	str := c.Get("")
+	str := c.Request().Header.Peek("Authorization")
 
 	fmt.Println(str)
 

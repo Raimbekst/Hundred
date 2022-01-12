@@ -45,6 +45,7 @@ func (w *WinnerRepos) CreateWinner(input domain.WinnerInput) error {
 	if input.EndCheckDate == 0 {
 		input.EndCheckDate = float64(time.Now().Unix())
 	}
+
 	if input.EndRegisteredDate == 0 {
 		input.EndRegisteredDate = float64(time.Now().Unix())
 	}
@@ -52,6 +53,7 @@ func (w *WinnerRepos) CreateWinner(input domain.WinnerInput) error {
 	if input.PartnerId != 0 {
 		forRaffleValues = append(forRaffleValues, fmt.Sprintf("c.partner_id = %d", input.PartnerId))
 	}
+
 	if input.MoneyAmount != 0 {
 
 		forRaffleValues = append(forRaffleValues, fmt.Sprintf("c.check_amount <= %d", input.MoneyAmount))
@@ -63,6 +65,7 @@ func (w *WinnerRepos) CreateWinner(input domain.WinnerInput) error {
 
 	forRaffleValues = append(forRaffleValues, fmt.Sprintf("check_date >= to_timestamp(%f) at time zone 'GMT'  AND check_date <= to_timestamp(%f) at time zone 'GMT'", input.StartCheckDate, input.EndCheckDate))
 	forRaffleValues = append(forRaffleValues, fmt.Sprintf("c.is_winner = %s", false))
+
 	whereClause = strings.Join(forRaffleValues, " AND ")
 
 	if whereClause != "" {
@@ -70,9 +73,8 @@ func (w *WinnerRepos) CreateWinner(input domain.WinnerInput) error {
 	}
 
 	queryGetAllMembers := fmt.Sprintf(`SELECT c.id FROM %s c INNER JOIN %s u on c.user_id = u.id %s`, checks, usersTable, setValues)
-	fmt.Println(queryGetAllMembers)
+
 	err = w.db.Select(&inp, queryGetAllMembers)
-	fmt.Println(inp)
 	if err != nil {
 		return fmt.Errorf("repository.CreateWinner:%w", err)
 	}
