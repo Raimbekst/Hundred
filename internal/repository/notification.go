@@ -320,17 +320,24 @@ func (n *NotificationRepos) StoreUsersToken(userId *int, token string) (int, err
 	queryCheck := fmt.Sprintf("SELECT id FROM %s WHERE registration_token = $1", notificationTokens)
 
 	err := n.db.Get(&tokens, queryCheck, token)
-
 	if err == nil {
-		return 0, fmt.Errorf("repository.StoreUsersToken: %w", domain.ErrTokenAlreadyExist)
-	}
 
-	query := fmt.Sprintf("INSERT INTO %s(user_id,registration_token) VALUES($1, $2) RETURNING id", notificationTokens)
+		queryUpdate := fmt.Sprintf("UPDATE %s SET user_id = $1 WHERE registration_token = $2", notificationTokens)
 
-	err = n.db.QueryRowx(query, userId, token).Scan(&id)
+		_, err = n.db.Exec(queryUpdate, userId, token)
+		if err != nil {
+			return 0, fmt.Errorf("repository.StoreUsersToken: %w", err)
+		}
 
-	if err != nil {
-		return 0, fmt.Errorf("repository.StoreUsersToken: %w", err)
+	} else {
+
+		query := fmt.Sprintf("INSERT INTO %s(user_id,registration_token) VALUES($1, $2) RETURNING id", notificationTokens)
+
+		err = n.db.QueryRowx(query, userId, token).Scan(&id)
+
+		if err != nil {
+			return 0, fmt.Errorf("repository.StoreUsersToken: %w", err)
+		}
 	}
 	return id, nil
 }
