@@ -2,7 +2,6 @@ package v1
 
 import (
 	"HundredToFive/pkg/logger"
-	"fmt"
 	"github.com/gofiber/fiber/v2"
 	"github.com/golang-jwt/jwt/v4"
 	"strconv"
@@ -31,7 +30,6 @@ func newResponse(c *fiber.Ctx, statusCode, message string) {
 
 func getUser(c *fiber.Ctx) (string, int) {
 	user := c.Locals("user").(*jwt.Token)
-	fmt.Println(user)
 	claims := user.Claims.(jwt.MapClaims)
 	id := claims["jti"].(string)
 	userType := claims["sub"].(string)

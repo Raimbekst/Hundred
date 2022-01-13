@@ -12,7 +12,9 @@ import (
 	"github.com/gofiber/fiber/v2"
 	jwtware "github.com/gofiber/jwt/v3"
 	"google.golang.org/api/option"
+	"os"
 	"strconv"
+	"strings"
 	"time"
 )
 
@@ -105,8 +107,8 @@ type NotificationForUser struct {
 }
 
 type MessageSent struct {
-	Id       int                      `json:"id"`
-	Response *messaging.BatchResponse `json:"response"`
+	Id       int `json:"id"`
+	Response int `json:"response"`
 }
 
 // @Security User_Auth
@@ -128,8 +130,6 @@ func (h *Handler) createNotyForSpecificUser(c *fiber.Ctx) error {
 		return c.Status(fiber.StatusUnauthorized).JSON(response{Message: "нет доступа"})
 	}
 
-	f := c.Get("Authorization")
-	fmt.Println(f)
 	var input NotificationForUser
 
 	if err := c.BodyParser(&input); err != nil {
@@ -141,22 +141,36 @@ func (h *Handler) createNotyForSpecificUser(c *fiber.Ctx) error {
 		return c.Status(fiber.StatusBadRequest).JSON(errs)
 	}
 
-	opt := option.WithCredentialsFile("./hundredtofive-1652d-firebase-adminsdk-oecbb-6f47f9aa54.json")
+	inp := domain.Notification{
+		Title:   input.Title,
+		Text:    input.Text,
+		Link:    input.Link,
+		Date:    float64(time.Now().Unix()),
+		Status:  2,
+		Getters: 2,
+		Ids:     input.UserIds,
+	}
 
-	config := &firebase.Config{ProjectID: "hundredtofive-1652d"}
+	tokens, idInt, err := h.services.Notification.CreateForUser(inp)
+
+	if err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(response{Message: err.Error()})
+	}
+
+	opt := option.WithCredentialsFile(os.Getenv("FIREBASE_TOKEN"))
+
+	config := &firebase.Config{ProjectID: os.Getenv("FIREBASE_PROJECT_ID")}
 
 	app, err := firebase.NewApp(c.Context(), config, opt)
 	if err != nil {
-		return c.Status(fiber.StatusBadRequest).JSON(response{Message: err.Error()})
+		return c.Status(fiber.StatusInternalServerError).JSON(response{Message: err.Error()})
 	}
 
 	cl, err := app.Messaging(c.Context())
 
 	if err != nil {
-		return c.Status(fiber.StatusBadRequest).JSON(response{Message: err.Error()})
+		return c.Status(fiber.StatusInternalServerError).JSON(response{Message: err.Error()})
 	}
-
-	registrationToken := []string{"e6PDZz6B-fficwwtO6ePWy:APA91bHpqyI084W-jio7_D_wRT9wi3WsWL2bg4p0UVCt2KumkAIuHRmlX3Wc6CFYzsaWoUROps3Y5PNtvbQjIbw_hHTuNmVKQ5A76_3s-IyEOrQsRJcIMhqD5UQngpkNgAz6FeygJ0-4"}
 
 	message := &messaging.MulticastMessage{
 		Data: map[string]string{
@@ -164,15 +178,20 @@ func (h *Handler) createNotyForSpecificUser(c *fiber.Ctx) error {
 			"text":  input.Text,
 			"link":  input.Link,
 		},
-		Tokens: registrationToken,
+		Tokens: tokens,
 	}
 
 	res, err := cl.SendMulticast(c.Context(), message)
 	if err != nil {
-		return c.Status(fiber.StatusBadRequest).JSON(response{Message: err.Error()})
+		return c.Status(fiber.StatusInternalServerError).JSON(response{Message: err.Error()})
 	}
 
-	return c.Status(fiber.StatusCreated).JSON(MessageSent{Response: res})
+	if err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(response{Message: err.Error()})
+
+	}
+
+	return c.Status(fiber.StatusCreated).JSON(MessageSent{Id: idInt, Response: res.SuccessCount})
 
 }
 
@@ -383,11 +402,22 @@ type RegistrationTokenInput struct {
 // @Router /notification/response [post]
 func (h *Handler) notificationResponse(c *fiber.Ctx) error {
 
-	var id int = 0
+	var userId *int = nil
+	header := string(c.Request().Header.Peek("Authorization"))
 
-	str := c.Request().Header.Peek("Authorization")
+	if header != "" {
+		headerParts := strings.Split(header, " ")
+		uId, _, err := h.tokenManager.Parse(headerParts[1])
+		if err != nil {
+			return c.Status(fiber.StatusBadRequest).JSON(response{Message: "token can not get user info"})
+		}
 
-	fmt.Println(str)
+		idInt, err := strconv.Atoi(uId)
+		if err != nil {
+			return c.Status(fiber.StatusBadRequest).JSON(response{Message: "can not convert string to int"})
+		}
+		userId = &idInt
+	}
 
 	var input RegistrationTokenInput
 
@@ -401,7 +431,7 @@ func (h *Handler) notificationResponse(c *fiber.Ctx) error {
 		return c.Status(fiber.StatusBadRequest).JSON(errs)
 	}
 
-	id, err := h.services.Notification.StoreUsersToken(&id, input.RegistrationToken)
+	id, err := h.services.Notification.StoreUsersToken(userId, input.RegistrationToken)
 
 	if err != nil {
 		if errors.Is(err, domain.ErrTokenAlreadyExist) {

@@ -41,20 +41,23 @@ func (n *NotificationRepos) CreateForUser(noty domain.Notification) ([]string, i
 	var (
 		id          int
 		getterUsers []domain.GetterList
-		userTokens  domain.NotificationToken
+		userTokens  []domain.NotificationToken
 		tokens      []string
 	)
 
 	for _, value := range noty.Ids {
-		queryGetTokens := fmt.Sprintf("SELECT registration_token FROM %s WHERE id = $1 ", notificationTokens)
+		userTokens = nil
+		queryGetTokens := fmt.Sprintf("SELECT registration_token FROM %s WHERE user_id = $1 ", notificationTokens)
 
-		err := n.db.Get(&userTokens, queryGetTokens, value)
-
+		err := n.db.Select(&userTokens, queryGetTokens, value)
 		if err != nil {
 			continue
 		}
 
-		tokens = append(tokens, userTokens.RegistrationToken)
+		for _, val := range userTokens {
+			tokens = append(tokens, val.RegistrationToken)
+		}
+
 	}
 
 	tx := n.db.MustBegin()
@@ -64,7 +67,7 @@ func (n *NotificationRepos) CreateForUser(noty domain.Notification) ([]string, i
 						%s
 					(title,text,link,noty_date,status,noty_getters)
 						VALUES
-					($1,$2,$3,to_timestamp($4) timestamp at time zone 'GMT',$5,$6) RETURNING id`, notifications)
+					($1,$2,$3,to_timestamp($4) at time zone 'GMT',$5,$6) RETURNING id`, notifications)
 
 	err := tx.QueryRowx(query, noty.Title, noty.Text, noty.Link, noty.Date, noty.Status, noty.Getters).Scan(&id)
 
@@ -317,7 +320,6 @@ func (n *NotificationRepos) StoreUsersToken(userId *int, token string) (int, err
 	queryCheck := fmt.Sprintf("SELECT id FROM %s WHERE registration_token = $1", notificationTokens)
 
 	err := n.db.Get(&tokens, queryCheck, token)
-	fmt.Println(err)
 
 	if err == nil {
 		return 0, fmt.Errorf("repository.StoreUsersToken: %w", domain.ErrTokenAlreadyExist)

@@ -5,7 +5,6 @@ import (
 	"HundredToFive/internal/repository"
 	"HundredToFive/pkg/auth"
 	"HundredToFive/pkg/hash"
-	"HundredToFive/pkg/logger"
 	"HundredToFive/pkg/phone"
 	"context"
 	"fmt"
@@ -156,7 +155,6 @@ func (u *UserAuthService) UserSignIn(user domain.User) (*Tokens, error) {
 	if err != nil {
 		return nil, fmt.Errorf("service.UserSignIn: %w", err)
 	}
-	logger.Info(hashedPassword)
 	input, err := u.repos.SignIn(user.PhoneNumber, hashedPassword)
 	if err != nil {
 		return nil, fmt.Errorf("service.UserSignIn: %w", err)
