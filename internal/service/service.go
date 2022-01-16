@@ -154,6 +154,8 @@ type Notification interface {
 	StoreUsersToken(userId *int, token string) (int, error)
 
 	DownloadNotification(file *excelize.File) (*excelize.File, error)
+
+	GetAllRegistrationTokens() ([]string, error)
 }
 
 type Condition interface {

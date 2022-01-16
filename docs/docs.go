@@ -4624,9 +4624,6 @@ var doc = `{
                 "text": {
                     "type": "string"
                 },
-                "time": {
-                    "type": "integer"
-                },
                 "title": {
                     "type": "string"
                 },

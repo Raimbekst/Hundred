@@ -5,14 +5,11 @@ import (
 	"HundredToFive/pkg/excel"
 	"HundredToFive/pkg/validation/validationStructs"
 	"bytes"
+	"context"
 	"errors"
-	firebase "firebase.google.com/go/v4"
-	"firebase.google.com/go/v4/messaging"
 	"fmt"
 	"github.com/gofiber/fiber/v2"
 	jwtware "github.com/gofiber/jwt/v3"
-	"google.golang.org/api/option"
-	"os"
 	"strconv"
 	"strings"
 	"time"
@@ -61,7 +58,10 @@ type Notification struct {
 // @Failure default {object} response
 // @Router /notification/all [post]
 func (h *Handler) createNotyForAllUsers(c *fiber.Ctx) error {
+	url := c.BaseURL()
 	userType, _ := getUser(c)
+
+	ctx := context.TODO()
 
 	if userType != "admin" {
 		return c.Status(fiber.StatusUnauthorized).JSON(response{Message: "нет доступа"})
@@ -78,16 +78,31 @@ func (h *Handler) createNotyForAllUsers(c *fiber.Ctx) error {
 		return c.Status(fiber.StatusBadRequest).JSON(errs)
 	}
 
+	partnerList, _ := h.services.Partner.GetById(input.PartnerId)
+
+	var logo string
+	if partnerList.Logo != "" {
+		logo = url + "/" + "media/" + partnerList.Logo
+	}
+
+	var partId *int = &input.PartnerId
+
+	if input.PartnerId == 0 {
+		partId = nil
+	}
+
+	notyDate := input.Date + float64(input.Time)
+
 	noty := domain.Notification{
 		Title:     input.Title,
 		Text:      input.Text,
-		PartnerId: input.PartnerId,
+		PartnerId: partId,
 		Link:      input.Link,
 		Reference: input.Reference,
-		Date:      input.Date,
-		Time:      input.Time,
+		Date:      notyDate,
 		Status:    1,
 		Getters:   1,
+		Logo:      logo,
 	}
 
 	id, err := h.services.Notification.Create(noty)
@@ -95,6 +110,15 @@ func (h *Handler) createNotyForAllUsers(c *fiber.Ctx) error {
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(response{Message: err.Error()})
 	}
+
+	tokens, err := h.services.Notification.GetAllRegistrationTokens()
+
+	if err != nil {
+		return c.Status(fiber.StatusOK).JSON(MessageSent{Response: 0})
+
+	}
+
+	h.scheduleNotification(ctx, noty, tokens, id)
 
 	return c.Status(fiber.StatusCreated).JSON(idResponse{ID: id})
 }
@@ -125,6 +149,7 @@ type MessageSent struct {
 // @Router /notification/user [post]
 func (h *Handler) createNotyForSpecificUser(c *fiber.Ctx) error {
 	userType, _ := getUser(c)
+	ctx := context.TODO()
 
 	if userType != "admin" {
 		return c.Status(fiber.StatusUnauthorized).JSON(response{Message: "нет доступа"})
@@ -157,38 +182,10 @@ func (h *Handler) createNotyForSpecificUser(c *fiber.Ctx) error {
 		return c.Status(fiber.StatusInternalServerError).JSON(response{Message: err.Error()})
 	}
 
-	opt := option.WithCredentialsFile(os.Getenv("FIREBASE_TOKEN"))
-
-	config := &firebase.Config{ProjectID: os.Getenv("FIREBASE_PROJECT_ID")}
-
-	app, err := firebase.NewApp(c.Context(), config, opt)
-	if err != nil {
-		return c.Status(fiber.StatusInternalServerError).JSON(response{Message: err.Error()})
-	}
-
-	cl, err := app.Messaging(c.Context())
+	res, err := h.firebaseNotification(ctx, inp, tokens, idInt)
 
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(response{Message: err.Error()})
-	}
-
-	message := &messaging.MulticastMessage{
-		Data: map[string]string{
-			"title": input.Title,
-			"text":  input.Text,
-			"link":  input.Link,
-		},
-		Tokens: tokens,
-	}
-
-	res, err := cl.SendMulticast(c.Context(), message)
-	if err != nil {
-		return c.Status(fiber.StatusInternalServerError).JSON(response{Message: err.Error()})
-	}
-
-	if err != nil {
-		return c.Status(fiber.StatusBadRequest).JSON(response{Message: err.Error()})
-
 	}
 
 	return c.Status(fiber.StatusCreated).JSON(MessageSent{Id: idInt, Response: res.SuccessCount})
@@ -329,11 +326,10 @@ func (h *Handler) updateNotification(c *fiber.Ctx) error {
 	noty := domain.Notification{
 		Title:     input.Title,
 		Text:      input.Text,
-		PartnerId: input.PartnerId,
+		PartnerId: &input.PartnerId,
 		Link:      input.Link,
 		Reference: input.Reference,
 		Date:      input.Date,
-		Time:      input.Time,
 	}
 
 	id, err := strconv.Atoi(c.Params("id"))

@@ -20,6 +20,7 @@ require (
 	github.com/appleboy/go-fcm v0.1.5 // indirect
 	github.com/cockroachdb/apd v1.1.0 // indirect
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible
+	github.com/go-co-op/gocron v1.11.0 // indirect
 	github.com/go-gomail/gomail v0.0.0-20160411212932-81ebce5c23df
 	github.com/go-openapi/spec v0.20.4 // indirect
 	github.com/gofiber/jwt/v3 v3.2.1

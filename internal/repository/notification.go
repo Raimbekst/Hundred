@@ -23,11 +23,11 @@ func (n *NotificationRepos) Create(noty domain.Notification) (int, error) {
 	query := fmt.Sprintf(
 		`INSERT INTO 
 						%s
-					(title,text,partner_id,link,reference,noty_date,noty_time,status,noty_getters)	
+					(title,text,partner_id,link,reference,noty_date,status,noty_getters)	
 						VALUES
-					($1,$2,$3,$4,$5,to_timestamp($6) at time zone 'GMT',$7,$8,$9) RETURNING id`, notifications)
+					($1,$2,$3,$4,$5,to_timestamp($6) at time zone 'GMT',$7,$8) RETURNING id`, notifications)
 
-	err := n.db.QueryRowx(query, noty.Title, noty.Text, noty.PartnerId, noty.Link, noty.Reference, noty.Date, noty.Time, noty.Status, noty.Getters).Scan(&id)
+	err := n.db.QueryRowx(query, noty.Title, noty.Text, noty.PartnerId, noty.Link, noty.Reference, noty.Date, noty.Status, noty.Getters).Scan(&id)
 
 	if err != nil {
 		return 0, fmt.Errorf("repository.Create: %w", err)
@@ -133,13 +133,12 @@ func (n *NotificationRepos) GetAll(page domain.Pagination) (*domain.GetAllNotifi
 
 	query := fmt.Sprintf(
 		`SELECT 
-						n.id,n.title,n.text,p.logo,
-						n.link,n.reference,
+						n.id,n.title,n.text,
+						n.link,
 						extract(epoch from n.noty_date::timestamp at time zone 'GMT') "noty_date",
-						n.noty_time,n.status,n.noty_getters
+						n.status,n.noty_getters
 					FROM %s n
-					INNER JOIN %s p on n.partner_id = p.id  
-					ORDER BY id ASC LIMIT $1 OFFSET $2`, notifications, partners)
+					ORDER BY id ASC LIMIT $1 OFFSET $2`, notifications)
 
 	err = n.db.Select(&inp, query, page.Limit, offset)
 
@@ -147,6 +146,7 @@ func (n *NotificationRepos) GetAll(page domain.Pagination) (*domain.GetAllNotifi
 		return nil, fmt.Errorf("repository.GetAll: %w", err)
 	}
 
+	var gettersNotification domain.GetterList
 	for _, value := range inp {
 
 		queryGetAllUsers := fmt.Sprintf("SELECT * FROM %s WHERE notification_id = $1", getters)
@@ -155,12 +155,12 @@ func (n *NotificationRepos) GetAll(page domain.Pagination) (*domain.GetAllNotifi
 		if err != nil {
 			return nil, fmt.Errorf("repository.GetAll: %w", err)
 		}
-
 		for rows.Next() {
-			err := rows.StructScan(&value.Users)
+			err = rows.StructScan(&gettersNotification)
 			if err != nil {
 				return nil, fmt.Errorf("repository.GetAll: %w", err)
 			}
+			value.Users = append(value.Users, gettersNotification)
 		}
 
 	}
@@ -183,12 +183,12 @@ func (n *NotificationRepos) GetById(id int) (*domain.Notification, error) {
 
 	query := fmt.Sprintf(
 		`SELECT 
-						n.id,n.title,n.text,p.logo,
-						n.link,n.reference,
+						n.id,n.title,n.text,
+						n.link,
 						extract(epoch from n.noty_date::timestamp at time zone 'GMT') "noty_date",
-						n.noty_time,n.status,n.noty_getters
+						n.status,n.noty_getters
 					FROM %s n
-					INNER JOIN %s p 
+					FULL OUTER JOIN %s p 
 					on n.partner_id = p.id WHERE n.id = $1`, notifications, partners)
 
 	err := n.db.Get(&noty, query, id)
@@ -202,11 +202,14 @@ func (n *NotificationRepos) GetById(id int) (*domain.Notification, error) {
 	if err != nil {
 		return nil, fmt.Errorf("repository.GetById: %w", err)
 	}
+
+	var gettersNotification domain.GetterList
 	for rows.Next() {
-		err := rows.StructScan(&noty.Users)
+		err := rows.StructScan(&gettersNotification)
 		if err != nil {
 			return nil, fmt.Errorf("repository.GetById: %w", err)
 		}
+		noty.Users = append(noty.Users, gettersNotification)
 	}
 
 	return &noty, nil
@@ -262,15 +265,14 @@ func (n *NotificationRepos) Update(id int, inp domain.Notification) error {
 		argId++
 	}
 
-	if inp.Time != 0 {
-		setValues = append(setValues, fmt.Sprintf("noty_time=$%d", argId))
-		args = append(args, inp.Time)
-		argId++
-	}
-
-	if inp.PartnerId != 0 {
+	if inp.PartnerId != nil {
 		setValues = append(setValues, fmt.Sprintf("partner_id=$%d", argId))
 		args = append(args, inp.PartnerId)
+		argId++
+	}
+	if inp.Status != 0 {
+		setValues = append(setValues, fmt.Sprintf("status = $%d", argId))
+		args = append(args, inp.Status)
 		argId++
 	}
 	fmt.Println("sds")
@@ -320,11 +322,12 @@ func (n *NotificationRepos) StoreUsersToken(userId *int, token string) (int, err
 	queryCheck := fmt.Sprintf("SELECT id FROM %s WHERE registration_token = $1", notificationTokens)
 
 	err := n.db.Get(&tokens, queryCheck, token)
+
 	if err == nil {
 
-		queryUpdate := fmt.Sprintf("UPDATE %s SET user_id = $1 WHERE registration_token = $2", notificationTokens)
+		queryUpdate := fmt.Sprintf("UPDATE %s SET user_id = $1 WHERE registration_token = $2 RETURNING id", notificationTokens)
 
-		_, err = n.db.Exec(queryUpdate, userId, token)
+		err = n.db.QueryRowx(queryUpdate, userId, token).Scan(&id)
 		if err != nil {
 			return 0, fmt.Errorf("repository.StoreUsersToken: %w", err)
 		}
@@ -334,10 +337,28 @@ func (n *NotificationRepos) StoreUsersToken(userId *int, token string) (int, err
 		query := fmt.Sprintf("INSERT INTO %s(user_id,registration_token) VALUES($1, $2) RETURNING id", notificationTokens)
 
 		err = n.db.QueryRowx(query, userId, token).Scan(&id)
-
 		if err != nil {
 			return 0, fmt.Errorf("repository.StoreUsersToken: %w", err)
 		}
 	}
 	return id, nil
+}
+
+func (n *NotificationRepos) GetAllRegistrationTokens() ([]string, error) {
+	var (
+		tokens    []domain.NotificationToken
+		tokenList []string
+	)
+	query := fmt.Sprintf("SELECT * FROM %s", notificationTokens)
+
+	err := n.db.Select(&tokens, query)
+	if err != nil {
+		return nil, fmt.Errorf("repository.GetAllRegistrationTokens: %w", err)
+	}
+
+	for _, value := range tokens {
+		tokenList = append(tokenList, value.RegistrationToken)
+	}
+
+	return tokenList, nil
 }

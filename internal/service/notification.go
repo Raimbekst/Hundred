@@ -66,3 +66,7 @@ func (n *NotificationService) Delete(id int) error {
 func (n *NotificationService) StoreUsersToken(userId *int, token string) (int, error) {
 	return n.repos.StoreUsersToken(userId, token)
 }
+
+func (n *NotificationService) GetAllRegistrationTokens() ([]string, error) {
+	return n.repos.GetAllRegistrationTokens()
+}

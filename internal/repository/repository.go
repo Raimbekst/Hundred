@@ -126,6 +126,8 @@ type Notification interface {
 	Delete(id int) error
 
 	StoreUsersToken(userId *int, token string) (int, error)
+
+	GetAllRegistrationTokens() ([]string, error)
 }
 
 type About interface {

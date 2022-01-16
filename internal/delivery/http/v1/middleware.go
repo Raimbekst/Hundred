@@ -1,11 +1,15 @@
 package v1
 
 import (
+	"HundredToFive/internal/domain"
+	"context"
 	"errors"
 	"fmt"
+	"github.com/go-co-op/gocron"
 	"github.com/gofiber/fiber/v2"
 	"strconv"
 	"strings"
+	"time"
 )
 
 const (
@@ -44,4 +48,27 @@ func parseRequestHost(c *fiber.Ctx) string {
 	hostParts := strings.Split(refererParts[2], ":")
 
 	return hostParts[0]
+}
+
+func (h *Handler) scheduleNotification(ctx context.Context, noty domain.Notification, tokens []string, id int) {
+	s := gocron.NewScheduler(time.Local)
+
+	executionTime := int(int64(noty.Date) - time.Now().Unix())
+
+	s.Every(1).Day().StartAt(time.Now().Add(time.Duration(executionTime) * time.Second)).Do(func() {
+
+		fmt.Println("Raimbekst")
+		fmt.Println(tokens)
+
+		res, err := h.firebaseNotification(ctx, noty, tokens, id)
+
+		if err != nil {
+			fmt.Println(err)
+		}
+
+		fmt.Println(res.SuccessCount)
+
+	})
+
+	s.StartAsync()
 }

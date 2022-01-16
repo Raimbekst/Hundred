@@ -210,8 +210,6 @@ definitions:
         type: integer
       text:
         type: string
-      time:
-        type: integer
       title:
         type: string
       users:

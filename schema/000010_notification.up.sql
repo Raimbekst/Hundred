@@ -7,8 +7,7 @@ CREATE TABLE IF NOT EXISTS notifications(
     status int check (notifications.status >= 1 and 2 >= notifications.status),
     noty_getters int check ( notifications.noty_getters >= 1 and 2 >= notifications.noty_getters ),
     reference text,
-    noty_date timestamp,
-    noty_time int
+    noty_date timestamp
 );
 
 CREATE TABLE IF NOT EXISTS getters(
