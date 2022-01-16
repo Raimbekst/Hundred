@@ -4717,6 +4717,9 @@ var doc = `{
                 "status": {
                     "type": "string"
                 },
+                "user_id": {
+                    "type": "integer"
+                },
                 "user_name": {
                     "type": "string"
                 }

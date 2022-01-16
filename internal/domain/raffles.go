@@ -2,7 +2,8 @@ package domain
 
 type Raffle struct {
 	Id            int     `json:"id" db:"id"`
-	CheckId       *int    `json:"check_id,omitempty" db:"check_id"`
+	UserId        *int    `json:"user_id" db:"user_id"`
+	CheckId       *int    `json:"check_id" db:"check_id"`
 	RaffleDate    float64 `json:"raffle_date" db:"raffle_date"`
 	RaffleTime    int     `json:"raffle_time" db:"raffle_time"`
 	CheckCategory int     `json:"check_category" db:"check_category"`

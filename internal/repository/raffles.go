@@ -92,7 +92,8 @@ func (c *RaffleRepos) GetAll(page domain.Pagination, filter domain.FilterForRaff
 					r.check_id,
 					extract(epoch from raffle_date::timestamp at time zone 'GMT') "raffle_date",
 					u.phone_number,
-					u.user_name 
+					u.user_name,
+					u.id "user_id"
 				from 
 					%s r 
 				left outer join 
@@ -134,10 +135,12 @@ func (c *RaffleRepos) GetById(id int) (domain.Raffle, error) {
 					r.raffle_type,
 					r.status,
 					r.check_category,
+					r.check_id,
 					r.reference,
 					extract(epoch from raffle_date::timestamp at time zone 'GMT') "raffle_date",
 					u.phone_number,
-					u.user_name 
+					u.user_name,
+					u.id "user_id"
 				from 
 					%s r 
 				left outer join 
