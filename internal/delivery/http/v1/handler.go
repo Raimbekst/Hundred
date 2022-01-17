@@ -3,6 +3,7 @@ package v1
 import (
 	"HundredToFive/internal/service"
 	"HundredToFive/pkg/auth"
+	"context"
 	"github.com/gofiber/fiber/v2"
 )
 
@@ -10,10 +11,11 @@ type Handler struct {
 	services     *service.Service
 	tokenManager auth.TokenManager
 	signingKey   string
+	ctx          context.Context
 }
 
-func NewHandler(services *service.Service, tokenManager auth.TokenManager, signingKey string) *Handler {
-	return &Handler{services: services, tokenManager: tokenManager, signingKey: signingKey}
+func NewHandler(services *service.Service, tokenManager auth.TokenManager, signingKey string, ctx context.Context) *Handler {
+	return &Handler{services: services, tokenManager: tokenManager, signingKey: signingKey, ctx: ctx}
 }
 
 func (h *Handler) Init(api fiber.Router) {

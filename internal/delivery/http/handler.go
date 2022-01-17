@@ -6,6 +6,7 @@ import (
 	v1 "HundredToFive/internal/delivery/http/v1"
 	"HundredToFive/internal/service"
 	"HundredToFive/pkg/auth"
+	"context"
 	"fmt"
 	swagger "github.com/arsmn/fiber-swagger/v2"
 	"github.com/gofiber/fiber/v2"
@@ -17,10 +18,11 @@ type Handler struct {
 	services     *service.Service
 	tokenManager auth.TokenManager
 	signingKey   string
+	ctx          context.Context
 }
 
-func NewHandler(services *service.Service, tokenManager auth.TokenManager, signingKey string) *Handler {
-	return &Handler{services: services, tokenManager: tokenManager, signingKey: signingKey}
+func NewHandler(services *service.Service, tokenManager auth.TokenManager, signingKey string, ctx context.Context) *Handler {
+	return &Handler{services: services, tokenManager: tokenManager, signingKey: signingKey, ctx: ctx}
 }
 
 func (h *Handler) Init(cfg *config.Config) *fiber.App {
@@ -48,7 +50,7 @@ func (h *Handler) Init(cfg *config.Config) *fiber.App {
 }
 
 func (h *Handler) initApi(router *fiber.App) {
-	handler := v1.NewHandler(h.services, h.tokenManager, h.signingKey)
+	handler := v1.NewHandler(h.services, h.tokenManager, h.signingKey, h.ctx)
 	api := router.Group("/api")
 	{
 		handler.Init(api)

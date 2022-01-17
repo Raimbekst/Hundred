@@ -50,17 +50,22 @@ func parseRequestHost(c *fiber.Ctx) string {
 	return hostParts[0]
 }
 
-func (h *Handler) scheduleNotification(ctx context.Context, noty domain.Notification, tokens []string, id int) {
+func (h *Handler) scheduleNotification(ctx context.Context, noty domain.Notification, tokens []string, id int) error {
+
 	s := gocron.NewScheduler(time.Local)
 
 	executionTime := int(int64(noty.Date) - time.Now().Unix())
 
-	s.Every(1).Day().StartAt(time.Now().Add(time.Duration(executionTime) * time.Second)).Do(func() {
+	_, err := s.Every(1).Day().StartAt(time.Now().Add(time.Duration(executionTime) * time.Second)).Do(func() {
 
-		fmt.Println("Raimbekst")
-		fmt.Println(tokens)
+		notificationList, err := h.services.Notification.GetById(id)
 
-		res, err := h.firebaseNotification(ctx, noty, tokens, id)
+		if err != nil {
+			fmt.Println(err)
+			return
+		}
+
+		res, err := h.firebaseNotification(ctx, noty, tokens, notificationList.Id)
 
 		if err != nil {
 			fmt.Println(err)
@@ -69,6 +74,10 @@ func (h *Handler) scheduleNotification(ctx context.Context, noty domain.Notifica
 		fmt.Println(res.SuccessCount)
 
 	})
+	if err != nil {
+		return err
+	}
 
 	s.StartAsync()
+	return nil
 }

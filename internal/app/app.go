@@ -50,12 +50,14 @@ func Run(configPath string) {
 		logger.Error(err)
 	}
 
+	ctx := context.TODO()
+
 	repository := repos.NewRepository(db)
 	services := service.NewService(service.Deps{
 		Repos:           repository,
 		Hashes:          hashes,
 		OtpPhone:        otpNumberGenerator,
-		Ctx:             context.TODO(),
+		Ctx:             ctx,
 		Redis:           red,
 		TokenManager:    tokenManager,
 		AccessTokenTTL:  cfg.Auth.JWT.AccessTokenTTL,
@@ -64,7 +66,7 @@ func Run(configPath string) {
 		EmailConfig:     cfg.Email,
 	})
 
-	handlers := delivery.NewHandler(services, tokenManager, cfg.Auth.JWT.SigningKey)
+	handlers := delivery.NewHandler(services, tokenManager, cfg.Auth.JWT.SigningKey, ctx)
 
 	srv := server.NewServer(handlers.Init(cfg))
 

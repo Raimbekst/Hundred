@@ -5,7 +5,6 @@ import (
 	"HundredToFive/pkg/excel"
 	"HundredToFive/pkg/validation/validationStructs"
 	"bytes"
-	"context"
 	"errors"
 	"fmt"
 	"github.com/gofiber/fiber/v2"
@@ -59,9 +58,8 @@ type Notification struct {
 // @Router /notification/all [post]
 func (h *Handler) createNotyForAllUsers(c *fiber.Ctx) error {
 	url := c.BaseURL()
-	userType, _ := getUser(c)
 
-	ctx := context.TODO()
+	userType, _ := getUser(c)
 
 	if userType != "admin" {
 		return c.Status(fiber.StatusUnauthorized).JSON(response{Message: "нет доступа"})
@@ -104,7 +102,6 @@ func (h *Handler) createNotyForAllUsers(c *fiber.Ctx) error {
 		Getters:   1,
 		Logo:      logo,
 	}
-
 	id, err := h.services.Notification.Create(noty)
 
 	if err != nil {
@@ -118,7 +115,9 @@ func (h *Handler) createNotyForAllUsers(c *fiber.Ctx) error {
 
 	}
 
-	h.scheduleNotification(ctx, noty, tokens, id)
+	err = h.scheduleNotification(h.ctx, noty, tokens, id)
+
+	fmt.Println(err)
 
 	return c.Status(fiber.StatusCreated).JSON(idResponse{ID: id})
 }
@@ -149,7 +148,6 @@ type MessageSent struct {
 // @Router /notification/user [post]
 func (h *Handler) createNotyForSpecificUser(c *fiber.Ctx) error {
 	userType, _ := getUser(c)
-	ctx := context.TODO()
 
 	if userType != "admin" {
 		return c.Status(fiber.StatusUnauthorized).JSON(response{Message: "нет доступа"})
@@ -171,7 +169,7 @@ func (h *Handler) createNotyForSpecificUser(c *fiber.Ctx) error {
 		Text:    input.Text,
 		Link:    input.Link,
 		Date:    float64(time.Now().Unix()),
-		Status:  2,
+		Status:  1,
 		Getters: 2,
 		Ids:     input.UserIds,
 	}
@@ -182,7 +180,7 @@ func (h *Handler) createNotyForSpecificUser(c *fiber.Ctx) error {
 		return c.Status(fiber.StatusInternalServerError).JSON(response{Message: err.Error()})
 	}
 
-	res, err := h.firebaseNotification(ctx, inp, tokens, idInt)
+	res, err := h.firebaseNotification(h.ctx, inp, tokens, idInt)
 
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(response{Message: err.Error()})
