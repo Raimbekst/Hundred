@@ -104,6 +104,11 @@ func (r *RaffleService) Update(id int, inp domain.Raffle) error {
 	}
 	return r.repos.Update(id, raf)
 }
+
+func (r *RaffleService) UpdateStatus(timeNow int64) error {
+	return r.repos.UpdateStatus(timeNow)
+}
+
 func (r *RaffleService) Delete(id int) error {
 	return r.repos.Delete(id)
 }

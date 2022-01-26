@@ -78,8 +78,6 @@ func (c *RaffleRepos) GetAll(page domain.Pagination, filter domain.FilterForRaff
 
 	offset, pagesCount := calculatePagination(&page, count)
 
-	fmt.Println(queryCount)
-	fmt.Println(count)
 	inp := make([]*domain.Raffle, 0, page.Limit)
 	query := fmt.Sprintf(
 		`select 
@@ -206,6 +204,18 @@ func (c *RaffleRepos) Update(id int, inp domain.Raffle) error {
 	return err
 
 }
+
+func (c *RaffleRepos) UpdateStatus(timeNow int64) error {
+	query := fmt.Sprintf("UPDATE %s SET status = $1 WHERE raffle_date < to_timestamp($2) at time zone 'GMT' AND status = $3", raffles)
+
+	_, err := c.db.Exec(query, notFinished, timeNow, planned)
+
+	if err != nil {
+		return fmt.Errorf("repository.UpdateStatus:%w", err)
+	}
+	return nil
+}
+
 func (c *RaffleRepos) Delete(id int) error {
 	var checkId *int
 	tx := c.db.MustBegin()

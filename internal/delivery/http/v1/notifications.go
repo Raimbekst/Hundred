@@ -64,6 +64,7 @@ func (h *Handler) createNotyForAllUsers(c *fiber.Ctx) error {
 	if userType != "admin" {
 		return c.Status(fiber.StatusUnauthorized).JSON(response{Message: "нет доступа"})
 	}
+
 	var input Notification
 
 	if err := c.BodyParser(&input); err != nil {
@@ -107,17 +108,6 @@ func (h *Handler) createNotyForAllUsers(c *fiber.Ctx) error {
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(response{Message: err.Error()})
 	}
-
-	tokens, err := h.services.Notification.GetAllRegistrationTokens()
-
-	if err != nil {
-		return c.Status(fiber.StatusOK).JSON(MessageSent{Response: 0})
-
-	}
-
-	err = h.scheduleNotification(h.ctx, noty, tokens, id)
-
-	fmt.Println(err)
 
 	return c.Status(fiber.StatusCreated).JSON(idResponse{ID: id})
 }
@@ -203,11 +193,15 @@ func (h *Handler) createNotyForSpecificUser(c *fiber.Ctx) error {
 // @Router /notification [get]
 func (h *Handler) getAllNotifications(c *fiber.Ctx) error {
 	url := c.BaseURL()
+
 	var page domain.Pagination
+
 	if err := c.QueryParser(&page); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(response{Message: err.Error()})
 	}
+
 	list, err := h.services.Notification.GetAll(page)
+
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(response{Message: err.Error()})
 	}

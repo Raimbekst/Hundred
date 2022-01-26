@@ -1,11 +1,9 @@
 package v1
 
 import (
-	"HundredToFive/internal/domain"
 	"context"
 	"errors"
 	"fmt"
-	"github.com/go-co-op/gocron"
 	"github.com/gofiber/fiber/v2"
 	"strconv"
 	"strings"
@@ -50,34 +48,56 @@ func parseRequestHost(c *fiber.Ctx) string {
 	return hostParts[0]
 }
 
-func (h *Handler) scheduleNotification(ctx context.Context, noty domain.Notification, tokens []string, id int) error {
+func (h *Handler) changeStatus() {
+	_, _ = h.cron.AddFunc("* * * * *", func() {
+		timeNow := time.Now().Unix()
+		err := h.services.Raffle.UpdateStatus(timeNow)
 
-	s := gocron.NewScheduler(time.Local)
+		if err != nil {
 
-	executionTime := int(int64(noty.Date) - time.Now().Unix())
+			fmt.Println(err)
+		}
+		fmt.Println("changed")
+	})
+}
 
-	_, err := s.Every(1).Day().StartAt(time.Now().Add(time.Duration(executionTime) * time.Second)).Do(func() {
+func (h *Handler) sendNotification(ctx context.Context) {
 
-		notificationList, err := h.services.Notification.GetById(id)
+	_, _ = h.cron.AddFunc("* * * * *", func() {
+
+		timeNow := time.Now().Unix()
+
+		list, err := h.services.Notification.GetNotificationByDate(timeNow)
 
 		if err != nil {
 			fmt.Println(err)
-			return
 		}
 
-		res, err := h.firebaseNotification(ctx, noty, tokens, notificationList.Id)
+		tokens, err := h.services.Notification.GetAllRegistrationTokens()
 
 		if err != nil {
 			fmt.Println(err)
+
+		}
+		if list != nil {
+
+			for _, value := range list {
+				fmt.Println(value)
+				res, err := h.firebaseNotification(ctx, value, tokens, value.Id)
+
+				if err != nil {
+					fmt.Println(err)
+				}
+
+				fmt.Println(res.SuccessCount)
+
+			}
 		}
 
-		fmt.Println(res.SuccessCount)
+		fmt.Println("done")
 
 	})
-	if err != nil {
-		return err
-	}
 
-	s.StartAsync()
-	return nil
+	h.cron.Start()
+
 }

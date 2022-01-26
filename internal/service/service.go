@@ -117,6 +117,8 @@ type Raffle interface {
 	Delete(id int) error
 
 	DownloadRaffles(file *excelize.File) (*excelize.File, error)
+
+	UpdateStatus(timeNow int64) error
 }
 
 type Faq interface {
@@ -156,6 +158,8 @@ type Notification interface {
 	DownloadNotification(file *excelize.File) (*excelize.File, error)
 
 	GetAllRegistrationTokens() ([]string, error)
+
+	GetNotificationByDate(time int64) ([]domain.Notification, error)
 }
 
 type Condition interface {

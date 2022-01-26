@@ -47,9 +47,11 @@ func (n *NotificationRepos) CreateForUser(noty domain.Notification) ([]string, i
 
 	for _, value := range noty.Ids {
 		userTokens = nil
+
 		queryGetTokens := fmt.Sprintf("SELECT registration_token FROM %s WHERE user_id = $1 ", notificationTokens)
 
 		err := n.db.Select(&userTokens, queryGetTokens, value)
+
 		if err != nil {
 			continue
 		}
@@ -349,9 +351,11 @@ func (n *NotificationRepos) GetAllRegistrationTokens() ([]string, error) {
 		tokens    []domain.NotificationToken
 		tokenList []string
 	)
+
 	query := fmt.Sprintf("SELECT * FROM %s", notificationTokens)
 
 	err := n.db.Select(&tokens, query)
+
 	if err != nil {
 		return nil, fmt.Errorf("repository.GetAllRegistrationTokens: %w", err)
 	}
@@ -361,4 +365,26 @@ func (n *NotificationRepos) GetAllRegistrationTokens() ([]string, error) {
 	}
 
 	return tokenList, nil
+}
+
+func (n *NotificationRepos) GetNotificationByDate(time int64) ([]domain.Notification, error) {
+	var input []domain.Notification
+
+	query := fmt.Sprintf(
+		`SELECT 
+					id,
+					title,
+					text,
+					link,
+					extract(epoch from noty_date::timestamp at time zone 'GMT') "noty_date"
+				   FROM 
+				%s 
+				WHERE noty_date = to_timestamp($1) at time zone 'GMT'`, notifications)
+
+	err := n.db.Select(&input, query, time)
+
+	if err != nil {
+		return nil, fmt.Errorf("repository.GetNotificationByDate: %w", err)
+	}
+	return input, nil
 }

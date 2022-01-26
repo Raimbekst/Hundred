@@ -21,7 +21,7 @@ auth:
 smtp:
   host: "smtp.gmail.com"
   port: 587
-  from: "raimbekidirbai@gmail.com"
+  from: "100za5kz@gmail.com"
 
 email:
   templates:

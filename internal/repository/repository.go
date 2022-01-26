@@ -99,6 +99,8 @@ type Raffle interface {
 	GetById(id int) (domain.Raffle, error)
 	Update(id int, inp domain.Raffle) error
 	Delete(id int) error
+
+	UpdateStatus(timeNow int64) error
 }
 
 type Faq interface {
@@ -128,6 +130,8 @@ type Notification interface {
 	StoreUsersToken(userId *int, token string) (int, error)
 
 	GetAllRegistrationTokens() ([]string, error)
+
+	GetNotificationByDate(time int64) ([]domain.Notification, error)
 }
 
 type About interface {

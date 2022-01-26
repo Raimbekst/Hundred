@@ -12,6 +12,7 @@ import (
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/cors"
 	"github.com/gofiber/fiber/v2/middleware/logger"
+	"github.com/robfig/cron/v3"
 )
 
 type Handler struct {
@@ -19,10 +20,11 @@ type Handler struct {
 	tokenManager auth.TokenManager
 	signingKey   string
 	ctx          context.Context
+	cron         *cron.Cron
 }
 
-func NewHandler(services *service.Service, tokenManager auth.TokenManager, signingKey string, ctx context.Context) *Handler {
-	return &Handler{services: services, tokenManager: tokenManager, signingKey: signingKey, ctx: ctx}
+func NewHandler(services *service.Service, tokenManager auth.TokenManager, signingKey string, ctx context.Context, cron *cron.Cron) *Handler {
+	return &Handler{services: services, tokenManager: tokenManager, signingKey: signingKey, ctx: ctx, cron: cron}
 }
 
 func (h *Handler) Init(cfg *config.Config) *fiber.App {
@@ -50,7 +52,7 @@ func (h *Handler) Init(cfg *config.Config) *fiber.App {
 }
 
 func (h *Handler) initApi(router *fiber.App) {
-	handler := v1.NewHandler(h.services, h.tokenManager, h.signingKey, h.ctx)
+	handler := v1.NewHandler(h.services, h.tokenManager, h.signingKey, h.ctx, h.cron)
 	api := router.Group("/api")
 	{
 		handler.Init(api)

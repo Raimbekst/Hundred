@@ -15,6 +15,7 @@ import (
 	"HundredToFive/pkg/phone"
 	"context"
 	"errors"
+	"github.com/robfig/cron/v3"
 	"net/http"
 	"os"
 	"os/signal"
@@ -50,6 +51,8 @@ func Run(configPath string) {
 		logger.Error(err)
 	}
 
+	cron := cron.New()
+
 	ctx := context.TODO()
 
 	repository := repos.NewRepository(db)
@@ -66,7 +69,7 @@ func Run(configPath string) {
 		EmailConfig:     cfg.Email,
 	})
 
-	handlers := delivery.NewHandler(services, tokenManager, cfg.Auth.JWT.SigningKey, ctx)
+	handlers := delivery.NewHandler(services, tokenManager, cfg.Auth.JWT.SigningKey, ctx, cron)
 
 	srv := server.NewServer(handlers.Init(cfg))
 

@@ -70,3 +70,7 @@ func (n *NotificationService) StoreUsersToken(userId *int, token string) (int, e
 func (n *NotificationService) GetAllRegistrationTokens() ([]string, error) {
 	return n.repos.GetAllRegistrationTokens()
 }
+
+func (n *NotificationService) GetNotificationByDate(time int64) ([]domain.Notification, error) {
+	return n.repos.GetNotificationByDate(time)
+}
