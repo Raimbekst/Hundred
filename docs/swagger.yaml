@@ -1156,6 +1156,13 @@ paths:
         name: id
         required: true
         type: string
+      - description: only 1 or 2
+        enum:
+        - 1
+        - 2
+        in: formData
+        name: status
+        type: integer
       - description: image
         in: formData
         name: image

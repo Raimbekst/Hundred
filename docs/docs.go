@@ -871,6 +871,16 @@ var doc = `{
                         "required": true
                     },
                     {
+                        "enum": [
+                            1,
+                            2
+                        ],
+                        "type": "integer",
+                        "description": "only 1 or 2",
+                        "name": "status",
+                        "in": "formData"
+                    },
+                    {
                         "type": "file",
                         "description": "image",
                         "name": "image",
