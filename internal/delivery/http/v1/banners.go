@@ -23,6 +23,7 @@ func (h *Handler) initBannerCategoryRoutes(api fiber.Router) {
 
 		{
 			admin.Post("", h.createBanner)
+			admin.Post("/kz", h.createBannerKz)
 			admin.Put("/:id", h.updateBanner)
 			admin.Delete("/:id", h.deleteBanner)
 
@@ -36,6 +37,61 @@ type Banner struct {
 	Status int                   `form:"status"  enums:"1,2" default:"1"`
 	Image  *multipart.FileHeader `form:"image"`
 	Iframe string                `form:"iframe"`
+}
+
+// @Security User_Auth
+// @Tags banner
+// @ModuleID createBannerKz
+// @Accept  multipart/form-data
+// @Produce  json
+// @Param name formData string false "name of banner"
+// @Param status formData int false "only 1 or 2" Enums(1,2)
+// @Param image formData file false "image"
+// @Param iframe formData string false "iframe"
+// @Success 201 {object} idResponse
+// @Failure 400,404 {object} response
+// @Failure 500 {object} response
+// @Failure default {object} response
+// @Router /banner/kz [post]
+func (h *Handler) createBannerKz(c *fiber.Ctx) error {
+
+	userType, _ := getUser(c)
+
+	if userType != "admin" {
+		return c.Status(fiber.StatusUnauthorized).JSON(response{Message: "нет доступа"})
+	}
+	var (
+		input Banner
+		err   error
+	)
+
+	if err := c.BodyParser(&input); err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(response{Message: err.Error()})
+	}
+
+	var image string
+
+	file, _ := c.FormFile("image")
+
+	if file != nil {
+		image, err = media.GetFileName(c, file)
+		if err != nil {
+			return c.Status(fiber.StatusBadRequest).JSON(response{Message: err.Error()})
+		}
+	}
+
+	banner := domain.Banner{
+		Name:         input.Name,
+		Status:       input.Status,
+		Image:        image,
+		Iframe:       input.Iframe,
+		LanguageType: "kz",
+	}
+	id, err := h.services.Banner.Create(banner)
+	if err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(response{Message: err.Error()})
+	}
+	return c.Status(fiber.StatusCreated).JSON(idResponse{ID: id})
 }
 
 // @Security User_Auth
@@ -80,10 +136,11 @@ func (h *Handler) createBanner(c *fiber.Ctx) error {
 	}
 
 	banner := domain.Banner{
-		Name:   input.Name,
-		Status: input.Status,
-		Image:  image,
-		Iframe: input.Iframe,
+		Name:         input.Name,
+		Status:       input.Status,
+		Image:        image,
+		Iframe:       input.Iframe,
+		LanguageType: "ru",
 	}
 	id, err := h.services.Banner.Create(banner)
 	if err != nil {
@@ -102,6 +159,7 @@ type FilterForBanner struct {
 // @Accept  json
 // @Produce  json
 // @Param filter query FilterForBanner false "filter by status"
+// @Param filter query LanguageTypeInput true "A filter info"
 // @Param array query domain.Pagination  true "A page info"
 // @Success 200 {object} domain.GetAllBannersCategoryResponse
 // @Failure 400,404 {object} response
@@ -116,11 +174,17 @@ func (h *Handler) getAllBanners(c *fiber.Ctx) error {
 		return c.Status(fiber.StatusBadRequest).JSON(response{Message: err.Error()})
 	}
 
+	var lang LanguageTypeInput
+
+	if err := c.QueryParser(&lang); err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(response{Message: err.Error()})
+	}
+
 	var page domain.Pagination
 	if err := c.QueryParser(&page); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(response{Message: err.Error()})
 	}
-	list, err := h.services.Banner.GetAll(page, filter.Status)
+	list, err := h.services.Banner.GetAll(page, filter.Status, lang.LanguageType)
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(response{Message: err.Error()})
 	}

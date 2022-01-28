@@ -19,21 +19,32 @@ func NewBannerRepos(db *sqlx.DB) *BannerRepos {
 
 func (b *BannerRepos) Create(banner domain.Banner) (int, error) {
 	var id int
-	query := fmt.Sprintf("INSERT INTO %s(name,status,image,iframe) VALUES($1,$2,$3,$4) RETURNING id", banners)
-	err := b.db.QueryRowx(query, banner.Name, banner.Status, banner.Image, banner.Iframe).Scan(&id)
+	query := fmt.Sprintf("INSERT INTO %s(name,status,image,iframe,langaue_type) VALUES($1,$2,$3,$4,$5) RETURNING id", banners)
+	err := b.db.QueryRowx(query, banner.Name, banner.Status, banner.Image, banner.Iframe, banner.LanguageType).Scan(&id)
 	if err != nil {
 		return 0, fmt.Errorf("repository.Create: %w", err)
 	}
 	return id, nil
 }
 
-func (b *BannerRepos) GetAll(page domain.Pagination, status int) (*domain.GetAllBannersCategoryResponse, error) {
+func (b *BannerRepos) GetAll(page domain.Pagination, status int, lang string) (*domain.GetAllBannersCategoryResponse, error) {
 	var (
-		setValues string
-		count     int
+		setValues      string
+		count          int
+		forCheckValues []string
+		whereClause    string
 	)
 	if status != 0 {
-		setValues = fmt.Sprintf("WHERE status = %d", status)
+		forCheckValues = append(forCheckValues, fmt.Sprintf("status = %d", status))
+	}
+	if lang != "" {
+		forCheckValues = append(forCheckValues, fmt.Sprintf("language_type = '%s'", lang))
+
+	}
+	whereClause = strings.Join(forCheckValues, " AND ")
+
+	if whereClause != "" {
+		setValues = "WHERE " + whereClause
 	}
 
 	queryCount := fmt.Sprintf(

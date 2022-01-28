@@ -85,7 +85,7 @@ type Partner interface {
 
 type Banner interface {
 	Create(banner domain.Banner) (int, error)
-	GetAll(page domain.Pagination, status int) (*domain.GetAllBannersCategoryResponse, error)
+	GetAll(page domain.Pagination, status int, lang string) (*domain.GetAllBannersCategoryResponse, error)
 	GetById(id int) (domain.Banner, error)
 	Update(id int, inp domain.Banner) error
 	Delete(id int) error
@@ -123,13 +123,13 @@ type Raffle interface {
 
 type Faq interface {
 	Create(faq domain.Faq) (int, error)
-	GetAll(page domain.Pagination) (*domain.GetAllFaqsCategoryResponse, error)
+	GetAll(page domain.Pagination, lang string) (*domain.GetAllFaqsCategoryResponse, error)
 	GetById(id int) (domain.Faq, error)
 	Update(id int, inp domain.Faq) error
 	Delete(id int) error
 
 	CreateDesc(desc domain.Description) (int, error)
-	GetAllDesc(page domain.Pagination) (*domain.GetAllDescCategoryResponse, error)
+	GetAllDesc(page domain.Pagination, lang string) (*domain.GetAllDescCategoryResponse, error)
 	GetDescById(id int) (domain.Description, error)
 	UpdateDesc(id int, inp domain.Description) error
 	DeleteDesc(id int) error
@@ -164,7 +164,7 @@ type Notification interface {
 
 type Condition interface {
 	Create(con domain.Condition) (int, error)
-	GetAll(page domain.Pagination) (*domain.GetAllConditionCategoryResponse, error)
+	GetAll(page domain.Pagination, lang string) (*domain.GetAllConditionCategoryResponse, error)
 	GetById(id int) (domain.Condition, error)
 	Update(id int, inp domain.Condition) error
 	Delete(id int) error

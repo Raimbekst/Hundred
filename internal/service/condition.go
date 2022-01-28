@@ -17,8 +17,8 @@ func (c *ConditionService) Create(con domain.Condition) (int, error) {
 	return c.repos.Create(con)
 }
 
-func (c *ConditionService) GetAll(page domain.Pagination) (*domain.GetAllConditionCategoryResponse, error) {
-	return c.repos.GetAll(page)
+func (c *ConditionService) GetAll(page domain.Pagination, lang string) (*domain.GetAllConditionCategoryResponse, error) {
+	return c.repos.GetAll(page, lang)
 }
 
 func (c *ConditionService) GetById(id int) (domain.Condition, error) {

@@ -27,6 +27,8 @@ definitions:
         type: string
       image:
         type: string
+      language_type:
+        type: string
       name:
         type: string
       status:
@@ -59,6 +61,8 @@ definitions:
         type: string
       id:
         type: integer
+      language_type:
+        type: string
       text:
         type: string
     type: object
@@ -75,6 +79,8 @@ definitions:
         type: string
       id:
         type: integer
+      language_type:
+        type: string
       question:
         type: string
     type: object
@@ -989,6 +995,12 @@ paths:
         in: query
         name: status
         type: integer
+      - enum:
+        - ru
+        - kz
+        in: query
+        name: language_type
+        type: string
       - in: query
         minimum: 0
         name: limit
@@ -1182,6 +1194,57 @@ paths:
           description: OK
           schema:
             $ref: '#/definitions/v1.okResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/v1.response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/v1.response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/v1.response'
+        default:
+          description: ""
+          schema:
+            $ref: '#/definitions/v1.response'
+      security:
+      - User_Auth: []
+      tags:
+      - banner
+  /banner/kz:
+    post:
+      consumes:
+      - multipart/form-data
+      parameters:
+      - description: name of banner
+        in: formData
+        name: name
+        type: string
+      - description: only 1 or 2
+        enum:
+        - 1
+        - 2
+        in: formData
+        name: status
+        type: integer
+      - description: image
+        in: formData
+        name: image
+        type: file
+      - description: iframe
+        in: formData
+        name: iframe
+        type: string
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/v1.idResponse'
         "400":
           description: Bad Request
           schema:
@@ -1606,6 +1669,12 @@ paths:
         minimum: 0
         name: page
         type: integer
+      - enum:
+        - ru
+        - kz
+        in: query
+        name: language_type
+        type: string
       produces:
       - application/json
       responses:
@@ -1784,6 +1853,44 @@ paths:
       - User_Auth: []
       tags:
       - condition
+  /condition/kz:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: condition
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/v1.Condition'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/v1.idResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/v1.response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/v1.response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/v1.response'
+        default:
+          description: ""
+          schema:
+            $ref: '#/definitions/v1.response'
+      security:
+      - User_Auth: []
+      tags:
+      - condition
   /days:
     get:
       consumes:
@@ -1834,6 +1941,12 @@ paths:
         minimum: 0
         name: page
         type: integer
+      - enum:
+        - ru
+        - kz
+        in: query
+        name: language_type
+        type: string
       produces:
       - application/json
       responses:
@@ -2012,6 +2125,44 @@ paths:
       - User_Auth: []
       tags:
       - about
+  /description/kz:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: description
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/v1.Description'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/v1.idResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/v1.response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/v1.response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/v1.response'
+        default:
+          description: ""
+          schema:
+            $ref: '#/definitions/v1.response'
+      security:
+      - User_Auth: []
+      tags:
+      - about
   /faq:
     get:
       consumes:
@@ -2027,6 +2178,12 @@ paths:
         minimum: 0
         name: page
         type: integer
+      - enum:
+        - ru
+        - kz
+        in: query
+        name: language_type
+        type: string
       produces:
       - application/json
       responses:
@@ -2185,6 +2342,44 @@ paths:
           description: OK
           schema:
             $ref: '#/definitions/v1.okResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/v1.response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/v1.response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/v1.response'
+        default:
+          description: ""
+          schema:
+            $ref: '#/definitions/v1.response'
+      security:
+      - User_Auth: []
+      tags:
+      - faq
+  /faq/kz:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: faq
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/v1.Faq'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/v1.idResponse'
         "400":
           description: Bad Request
           schema:

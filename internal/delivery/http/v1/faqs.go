@@ -8,6 +8,10 @@ import (
 	"strconv"
 )
 
+type LanguageTypeInput struct {
+	LanguageType string `json:"language_type" query:"language_type" form:"language_type" enums:"ru,kz"`
+}
+
 func (h *Handler) initFaqCategoryRoutes(api fiber.Router) {
 	city := api.Group("/faq")
 	{
@@ -18,6 +22,7 @@ func (h *Handler) initFaqCategoryRoutes(api fiber.Router) {
 		}))
 		{
 			admin.Post("", h.createFaq)
+			admin.Post("/kz", h.createFaqKz)
 			admin.Put("/:id", h.updateFaq)
 			admin.Delete("/:id", h.deleteFaq)
 		}
@@ -35,6 +40,7 @@ func (h *Handler) initDescCategoryRoutes(api fiber.Router) {
 		}))
 		{
 			admin.Post("", h.createDesc)
+			admin.Post("/kz", h.createDescKz)
 			admin.Put("/:id", h.updateDesc)
 			admin.Delete("/:id", h.deleteDesc)
 		}
@@ -44,6 +50,40 @@ func (h *Handler) initDescCategoryRoutes(api fiber.Router) {
 type Faq struct {
 	Question string `json:"question" db:"question"`
 	Answer   string `json:"answer" db:"answer"`
+}
+
+// @Security User_Auth
+// @Tags faq
+// @ModuleID createFaqKz
+// @Accept  json
+// @Produce  json
+// @Param data body Faq  true "faq"
+// @Success 201 {object} idResponse
+// @Failure 400,404 {object} response
+// @Failure 500 {object} response
+// @Failure default {object} response
+// @Router /faq/kz [post]
+func (h *Handler) createFaqKz(c *fiber.Ctx) error {
+	userType, _ := getUser(c)
+
+	if userType != "admin" {
+		return c.Status(fiber.StatusUnauthorized).JSON(response{Message: "нет доступа"})
+	}
+
+	var input Faq
+	if err := c.BodyParser(&input); err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(response{Message: err.Error()})
+	}
+	faq := domain.Faq{
+		Answer:       input.Answer,
+		Question:     input.Question,
+		LanguageType: "kz",
+	}
+	id, err := h.services.Faq.Create(faq)
+	if err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(response{Message: err.Error()})
+	}
+	return c.Status(fiber.StatusCreated).JSON(idResponse{ID: id})
 }
 
 // @Security User_Auth
@@ -69,8 +109,9 @@ func (h *Handler) createFaq(c *fiber.Ctx) error {
 		return c.Status(fiber.StatusBadRequest).JSON(response{Message: err.Error()})
 	}
 	faq := domain.Faq{
-		Answer:   input.Answer,
-		Question: input.Question,
+		Answer:       input.Answer,
+		Question:     input.Question,
+		LanguageType: "ru",
 	}
 	id, err := h.services.Faq.Create(faq)
 	if err != nil {
@@ -85,6 +126,7 @@ func (h *Handler) createFaq(c *fiber.Ctx) error {
 // @Accept  json
 // @Produce  json
 // @Param array query domain.Pagination  true "A page info"
+// @Param filter query LanguageTypeInput true "A filter info"
 // @Success 200 {object} domain.GetAllFaqsCategoryResponse
 // @Failure 400,404 {object} response
 // @Failure 500 {object} response
@@ -95,7 +137,14 @@ func (h *Handler) getAllFaqs(c *fiber.Ctx) error {
 	if err := c.QueryParser(&page); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(response{Message: err.Error()})
 	}
-	list, err := h.services.Faq.GetAll(page)
+
+	var filter LanguageTypeInput
+
+	if err := c.QueryParser(&filter); err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(response{Message: err.Error()})
+	}
+
+	list, err := h.services.Faq.GetAll(page, filter.LanguageType)
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(response{Message: err.Error()})
 	}
@@ -211,6 +260,42 @@ type Description struct {
 
 // @Security User_Auth
 // @Tags about
+// @ModuleID createDescKz
+// @Accept  json
+// @Produce  json
+// @Param data body Description  true "description"
+// @Success 201 {object} idResponse
+// @Failure 400,404 {object} response
+// @Failure 500 {object} response
+// @Failure default {object} response
+// @Router /description/kz [post]
+func (h *Handler) createDescKz(c *fiber.Ctx) error {
+	userType, _ := getUser(c)
+
+	if userType != "admin" {
+		return c.Status(fiber.StatusUnauthorized).JSON(response{Message: "нет доступа"})
+	}
+
+	var input Description
+	if err := c.BodyParser(&input); err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(response{Message: err.Error()})
+	}
+
+	desc := domain.Description{
+		Caption:      input.Caption,
+		Text:         input.Text,
+		LanguageType: "kz",
+	}
+
+	id, err := h.services.Faq.CreateDesc(desc)
+	if err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(response{Message: err.Error()})
+	}
+	return c.Status(fiber.StatusCreated).JSON(idResponse{ID: id})
+}
+
+// @Security User_Auth
+// @Tags about
 // @ModuleID createDesc
 // @Accept  json
 // @Produce  json
@@ -233,8 +318,9 @@ func (h *Handler) createDesc(c *fiber.Ctx) error {
 	}
 
 	desc := domain.Description{
-		Caption: input.Caption,
-		Text:    input.Text,
+		Caption:      input.Caption,
+		Text:         input.Text,
+		LanguageType: "ru",
 	}
 
 	id, err := h.services.Faq.CreateDesc(desc)
@@ -250,17 +336,24 @@ func (h *Handler) createDesc(c *fiber.Ctx) error {
 // @Accept  json
 // @Produce  json
 // @Param array query domain.Pagination  true "A page info"
+// @Param filter query LanguageTypeInput true "A filter info"
 // @Success 200 {object} domain.GetAllDescCategoryResponse
 // @Failure 400,404 {object} response
 // @Failure 500 {object} response
 // @Failure default {object} response
 // @Router /description [get]
 func (h *Handler) getAllDescriptions(c *fiber.Ctx) error {
+
+	var lang LanguageTypeInput
+	if err := c.QueryParser(&lang); err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(response{Message: err.Error()})
+	}
+
 	var page domain.Pagination
 	if err := c.QueryParser(&page); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(response{Message: err.Error()})
 	}
-	list, err := h.services.Faq.GetAllDesc(page)
+	list, err := h.services.Faq.GetAllDesc(page, lang.LanguageType)
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(response{Message: err.Error()})
 	}

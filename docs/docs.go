@@ -667,6 +667,15 @@ var doc = `{
                         "in": "query"
                     },
                     {
+                        "enum": [
+                            "ru",
+                            "kz"
+                        ],
+                        "type": "string",
+                        "name": "language_type",
+                        "in": "query"
+                    },
+                    {
                         "minimum": 0,
                         "type": "integer",
                         "name": "limit",
@@ -712,6 +721,86 @@ var doc = `{
                     }
                 }
             },
+            "post": {
+                "security": [
+                    {
+                        "User_Auth": []
+                    }
+                ],
+                "consumes": [
+                    "multipart/form-data"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "banner"
+                ],
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "name of banner",
+                        "name": "name",
+                        "in": "formData"
+                    },
+                    {
+                        "enum": [
+                            1,
+                            2
+                        ],
+                        "type": "integer",
+                        "description": "only 1 or 2",
+                        "name": "status",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "file",
+                        "description": "image",
+                        "name": "image",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "string",
+                        "description": "iframe",
+                        "name": "iframe",
+                        "in": "formData"
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "$ref": "#/definitions/v1.idResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/v1.response"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/v1.response"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/v1.response"
+                        }
+                    },
+                    "default": {
+                        "description": "",
+                        "schema": {
+                            "$ref": "#/definitions/v1.response"
+                        }
+                    }
+                }
+            }
+        },
+        "/banner/kz": {
             "post": {
                 "security": [
                     {
@@ -1620,6 +1709,15 @@ var doc = `{
                         "type": "integer",
                         "name": "page",
                         "in": "query"
+                    },
+                    {
+                        "enum": [
+                            "ru",
+                            "kz"
+                        ],
+                        "type": "string",
+                        "name": "language_type",
+                        "in": "query"
                     }
                 ],
                 "responses": {
@@ -1655,6 +1753,67 @@ var doc = `{
                     }
                 }
             },
+            "post": {
+                "security": [
+                    {
+                        "User_Auth": []
+                    }
+                ],
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "condition"
+                ],
+                "parameters": [
+                    {
+                        "description": "condition",
+                        "name": "data",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/v1.Condition"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "$ref": "#/definitions/v1.idResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/v1.response"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/v1.response"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/v1.response"
+                        }
+                    },
+                    "default": {
+                        "description": "",
+                        "schema": {
+                            "$ref": "#/definitions/v1.response"
+                        }
+                    }
+                }
+            }
+        },
+        "/condition/kz": {
             "post": {
                 "security": [
                     {
@@ -1974,6 +2133,15 @@ var doc = `{
                         "type": "integer",
                         "name": "page",
                         "in": "query"
+                    },
+                    {
+                        "enum": [
+                            "ru",
+                            "kz"
+                        ],
+                        "type": "string",
+                        "name": "language_type",
+                        "in": "query"
                     }
                 ],
                 "responses": {
@@ -2009,6 +2177,67 @@ var doc = `{
                     }
                 }
             },
+            "post": {
+                "security": [
+                    {
+                        "User_Auth": []
+                    }
+                ],
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "about"
+                ],
+                "parameters": [
+                    {
+                        "description": "description",
+                        "name": "data",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/v1.Description"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "$ref": "#/definitions/v1.idResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/v1.response"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/v1.response"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/v1.response"
+                        }
+                    },
+                    "default": {
+                        "description": "",
+                        "schema": {
+                            "$ref": "#/definitions/v1.response"
+                        }
+                    }
+                }
+            }
+        },
+        "/description/kz": {
             "post": {
                 "security": [
                     {
@@ -2274,6 +2503,15 @@ var doc = `{
                         "type": "integer",
                         "name": "page",
                         "in": "query"
+                    },
+                    {
+                        "enum": [
+                            "ru",
+                            "kz"
+                        ],
+                        "type": "string",
+                        "name": "language_type",
+                        "in": "query"
                     }
                 ],
                 "responses": {
@@ -2309,6 +2547,67 @@ var doc = `{
                     }
                 }
             },
+            "post": {
+                "security": [
+                    {
+                        "User_Auth": []
+                    }
+                ],
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "faq"
+                ],
+                "parameters": [
+                    {
+                        "description": "faq",
+                        "name": "data",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/v1.Faq"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "$ref": "#/definitions/v1.idResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/v1.response"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/v1.response"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/v1.response"
+                        }
+                    },
+                    "default": {
+                        "description": "",
+                        "schema": {
+                            "$ref": "#/definitions/v1.response"
+                        }
+                    }
+                }
+            }
+        },
+        "/faq/kz": {
             "post": {
                 "security": [
                     {
@@ -4356,6 +4655,9 @@ var doc = `{
                 "image": {
                     "type": "string"
                 },
+                "language_type": {
+                    "type": "string"
+                },
                 "name": {
                     "type": "string"
                 },
@@ -4406,6 +4708,9 @@ var doc = `{
                 "id": {
                     "type": "integer"
                 },
+                "language_type": {
+                    "type": "string"
+                },
                 "text": {
                     "type": "string"
                 }
@@ -4430,6 +4735,9 @@ var doc = `{
                 },
                 "id": {
                     "type": "integer"
+                },
+                "language_type": {
+                    "type": "string"
                 },
                 "question": {
                     "type": "string"

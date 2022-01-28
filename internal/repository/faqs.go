@@ -15,9 +15,9 @@ type FaqsRepos struct {
 
 func (f *FaqsRepos) CreateDesc(desc domain.Description) (int, error) {
 	var id int
-	query := fmt.Sprintf("INSERT INTO %s(caption,text) VALUES($1,$2) RETURNING id", descriptions)
+	query := fmt.Sprintf("INSERT INTO %s(caption,text,language_type) VALUES($1,$2,$3) RETURNING id", descriptions)
 
-	err := f.db.QueryRowx(query, desc.Caption, desc.Text).Scan(&id)
+	err := f.db.QueryRowx(query, desc.Caption, desc.Text, desc.LanguageType).Scan(&id)
 
 	if err != nil {
 		return 0, fmt.Errorf("repository.Create: %w", err)
@@ -25,17 +25,25 @@ func (f *FaqsRepos) CreateDesc(desc domain.Description) (int, error) {
 	return id, nil
 }
 
-func (f *FaqsRepos) GetAllDesc(page domain.Pagination) (*domain.GetAllDescCategoryResponse, error) {
-	count, err := countPage(f.db, descriptions)
-	if err != nil {
-		return nil, fmt.Errorf("repository.GetAll: %w", err)
+func (f *FaqsRepos) GetAllDesc(page domain.Pagination, lang string) (*domain.GetAllDescCategoryResponse, error) {
+	var (
+		setValues string
+		count     int
+	)
+	if lang != "" {
+		setValues = fmt.Sprintf("WHERE language_type = '%s'", lang)
 	}
+
+	queryCount := fmt.Sprintf(
+		`SELECT COUNT(*) FROM %s %s`, descriptions, setValues)
+
+	err := f.db.QueryRowx(queryCount).Scan(&count)
 
 	offset, pagesCount := calculatePagination(&page, count)
 
 	inp := make([]*domain.Description, 0, page.Limit)
 
-	query := fmt.Sprintf("SELECT * FROM %s ORDER BY id ASC LIMIT $1 OFFSET $2", descriptions)
+	query := fmt.Sprintf("SELECT * FROM %s %s ORDER BY id ASC LIMIT $1 OFFSET $2", descriptions, setValues)
 
 	err = f.db.Select(&inp, query, page.Limit, offset)
 	if err != nil {
@@ -122,9 +130,9 @@ func NewFaqsRepos(db *sqlx.DB) *FaqsRepos {
 
 func (f *FaqsRepos) Create(faq domain.Faq) (int, error) {
 	var id int
-	query := fmt.Sprintf("INSERT INTO %s(question,answer) VALUES($1,$2) RETURNING id", faqs)
+	query := fmt.Sprintf("INSERT INTO %s(question,answer,language_type) VALUES($1,$2,$3) RETURNING id", faqs)
 
-	err := f.db.QueryRowx(query, faq.Question, faq.Answer).Scan(&id)
+	err := f.db.QueryRowx(query, faq.Question, faq.Answer, faq.LanguageType).Scan(&id)
 
 	if err != nil {
 		return 0, fmt.Errorf("repository.Create: %w", err)
@@ -132,17 +140,25 @@ func (f *FaqsRepos) Create(faq domain.Faq) (int, error) {
 	return id, nil
 }
 
-func (f *FaqsRepos) GetAll(page domain.Pagination) (*domain.GetAllFaqsCategoryResponse, error) {
-	count, err := countPage(f.db, faqs)
-	if err != nil {
-		return nil, fmt.Errorf("repository.GetAll: %w", err)
+func (f *FaqsRepos) GetAll(page domain.Pagination, lang string) (*domain.GetAllFaqsCategoryResponse, error) {
+	var (
+		setValues string
+		count     int
+	)
+	if lang != "" {
+		setValues = fmt.Sprintf("WHERE language_type = '%s'", lang)
 	}
+
+	queryCount := fmt.Sprintf(
+		`SELECT COUNT(*) FROM %s %s`, faqs, setValues)
+
+	err := f.db.QueryRowx(queryCount).Scan(&count)
 
 	offset, pagesCount := calculatePagination(&page, count)
 
 	inp := make([]*domain.Faq, 0, page.Limit)
 
-	query := fmt.Sprintf("SELECT * FROM %s ORDER BY id ASC LIMIT $1 OFFSET $2", faqs)
+	query := fmt.Sprintf("SELECT * FROM %s %s ORDER BY id ASC LIMIT $1 OFFSET $2", faqs, setValues)
 	err = f.db.Select(&inp, query, page.Limit, offset)
 	if err != nil {
 		return nil, fmt.Errorf("repository.GetAll: %w", err)

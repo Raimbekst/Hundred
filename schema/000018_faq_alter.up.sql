@@ -1,0 +1,1 @@
+ALTER TABLE faqs ADD COLUMN language_type language_privileges;

@@ -19,6 +19,7 @@ func (h *Handler) initConditionRoutes(api fiber.Router) {
 		}))
 		{
 			admin.Post("", h.createCondition)
+			admin.Post("/kz", h.createConditionKz)
 			admin.Put("/:id", h.updateCondition)
 			admin.Delete("/:id", h.deleteCondition)
 		}
@@ -28,6 +29,42 @@ func (h *Handler) initConditionRoutes(api fiber.Router) {
 type Condition struct {
 	Caption string `json:"caption" db:"caption"`
 	Text    string `json:"text" db:"text"`
+}
+
+// @Security User_Auth
+// @Tags condition
+// @ModuleID createConditionKz
+// @Accept  json
+// @Produce  json
+// @Param data body Condition  true "condition"
+// @Success 201 {object} idResponse
+// @Failure 400,404 {object} response
+// @Failure 500 {object} response
+// @Failure default {object} response
+// @Router /condition/kz [post]
+func (h *Handler) createConditionKz(c *fiber.Ctx) error {
+	userType, _ := getUser(c)
+
+	if userType != "admin" {
+		return c.Status(fiber.StatusUnauthorized).JSON(response{Message: "нет доступа"})
+	}
+
+	var input Condition
+	if err := c.BodyParser(&input); err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(response{Message: err.Error()})
+	}
+
+	con := domain.Condition{
+		Caption:      input.Caption,
+		Text:         input.Text,
+		LanguageType: "kz",
+	}
+
+	id, err := h.services.Condition.Create(con)
+	if err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(response{Message: err.Error()})
+	}
+	return c.Status(fiber.StatusCreated).JSON(idResponse{ID: id})
 }
 
 // @Security User_Auth
@@ -54,8 +91,9 @@ func (h *Handler) createCondition(c *fiber.Ctx) error {
 	}
 
 	con := domain.Condition{
-		Caption: input.Caption,
-		Text:    input.Text,
+		Caption:      input.Caption,
+		Text:         input.Text,
+		LanguageType: "ru",
 	}
 
 	id, err := h.services.Condition.Create(con)
@@ -71,17 +109,24 @@ func (h *Handler) createCondition(c *fiber.Ctx) error {
 // @Accept  json
 // @Produce  json
 // @Param array query domain.Pagination  true "A page info"
+// @Param filter query LanguageTypeInput true "A filter info"
 // @Success 200 {object} domain.GetAllDescCategoryResponse
 // @Failure 400,404 {object} response
 // @Failure 500 {object} response
 // @Failure default {object} response
 // @Router /condition [get]
 func (h *Handler) getAllConditions(c *fiber.Ctx) error {
+	var lang LanguageTypeInput
+	if err := c.QueryParser(&lang); err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(response{Message: err.Error()})
+	}
+
 	var page domain.Pagination
 	if err := c.QueryParser(&page); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(response{Message: err.Error()})
 	}
-	list, err := h.services.Condition.GetAll(page)
+
+	list, err := h.services.Condition.GetAll(page, lang.LanguageType)
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(response{Message: err.Error()})
 	}

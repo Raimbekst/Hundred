@@ -19,9 +19,9 @@ func NewConditionRepos(db *sqlx.DB) *ConditionRepos {
 
 func (c *ConditionRepos) Create(con domain.Condition) (int, error) {
 	var id int
-	query := fmt.Sprintf("INSERT INTO %s(caption,text) VALUES($1,$2) RETURNING id", conditions)
+	query := fmt.Sprintf("INSERT INTO %s(caption,text,language_type) VALUES($1,$2,$3) RETURNING id", conditions)
 
-	err := c.db.QueryRowx(query, con.Caption, con.Text).Scan(&id)
+	err := c.db.QueryRowx(query, con.Caption, con.Text, con.LanguageType).Scan(&id)
 
 	if err != nil {
 		return 0, fmt.Errorf("repository.Create: %w", err)
@@ -29,17 +29,25 @@ func (c *ConditionRepos) Create(con domain.Condition) (int, error) {
 	return id, nil
 }
 
-func (c *ConditionRepos) GetAll(page domain.Pagination) (*domain.GetAllConditionCategoryResponse, error) {
-	count, err := countPage(c.db, conditions)
-	if err != nil {
-		return nil, fmt.Errorf("repository.GetAll: %w", err)
+func (c *ConditionRepos) GetAll(page domain.Pagination, lang string) (*domain.GetAllConditionCategoryResponse, error) {
+	var (
+		setValues string
+		count     int
+	)
+	if lang != "" {
+		setValues = fmt.Sprintf("WHERE language_type = '%s'", lang)
 	}
+
+	queryCount := fmt.Sprintf(
+		`SELECT COUNT(*) FROM %s %s`, conditions, setValues)
+
+	err := c.db.QueryRowx(queryCount).Scan(&count)
 
 	offset, pagesCount := calculatePagination(&page, count)
 
 	inp := make([]*domain.Condition, 0, page.Limit)
 
-	query := fmt.Sprintf("SELECT * FROM %s ORDER BY id ASC LIMIT $1 OFFSET $2", conditions)
+	query := fmt.Sprintf("SELECT * FROM %s %s ORDER BY id ASC LIMIT $1 OFFSET $2", conditions, setValues)
 
 	err = c.db.Select(&inp, query, page.Limit, offset)
 	if err != nil {

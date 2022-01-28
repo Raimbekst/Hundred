@@ -17,8 +17,8 @@ func (f *FaqService) Create(faq domain.Faq) (int, error) {
 	return f.repos.Create(faq)
 }
 
-func (f *FaqService) GetAll(page domain.Pagination) (*domain.GetAllFaqsCategoryResponse, error) {
-	return f.repos.GetAll(page)
+func (f *FaqService) GetAll(page domain.Pagination, lang string) (*domain.GetAllFaqsCategoryResponse, error) {
+	return f.repos.GetAll(page, lang)
 }
 
 func (f *FaqService) GetById(id int) (domain.Faq, error) {
@@ -37,8 +37,8 @@ func (f *FaqService) CreateDesc(desc domain.Description) (int, error) {
 	return f.repos.CreateDesc(desc)
 }
 
-func (f *FaqService) GetAllDesc(page domain.Pagination) (*domain.GetAllDescCategoryResponse, error) {
-	return f.repos.GetAllDesc(page)
+func (f *FaqService) GetAllDesc(page domain.Pagination, lang string) (*domain.GetAllDescCategoryResponse, error) {
+	return f.repos.GetAllDesc(page, lang)
 }
 
 func (f *FaqService) GetDescById(id int) (domain.Description, error) {

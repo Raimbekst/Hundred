@@ -18,8 +18,8 @@ func NewBannerService(repos repository.Banner) *BannerService {
 func (b *BannerService) Create(banner domain.Banner) (int, error) {
 	return b.repos.Create(banner)
 }
-func (b *BannerService) GetAll(page domain.Pagination, status int) (*domain.GetAllBannersCategoryResponse, error) {
-	return b.repos.GetAll(page, status)
+func (b *BannerService) GetAll(page domain.Pagination, status int, lang string) (*domain.GetAllBannersCategoryResponse, error) {
+	return b.repos.GetAll(page, status, lang)
 }
 func (b *BannerService) GetById(id int) (domain.Banner, error) {
 	return b.repos.GetById(id)

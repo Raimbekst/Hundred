@@ -1,0 +1,1 @@
+ALTER TABLE conditions ADD COLUMN language_type language_privileges;
