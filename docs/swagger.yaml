@@ -1156,6 +1156,10 @@ paths:
         name: id
         required: true
         type: string
+      - description: name of banner
+        in: formData
+        name: name
+        type: string
       - description: only 1 or 2
         enum:
         - 1

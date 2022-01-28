@@ -871,6 +871,12 @@ var doc = `{
                         "required": true
                     },
                     {
+                        "type": "string",
+                        "description": "name of banner",
+                        "name": "name",
+                        "in": "formData"
+                    },
+                    {
                         "enum": [
                             1,
                             2
