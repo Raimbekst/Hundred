@@ -37,7 +37,7 @@ type Partner struct {
 	Logo             *multipart.FileHeader `json:"logo" db:"logo"`
 	LinkWebsite      string                `json:"link_website" form:"link_website"`
 	Banner           *multipart.FileHeader `json:"banner" form:"banner"`
-	BannerKz         string                `json:"banner_kz" form:"banner_kz"`
+	BannerKz         *multipart.FileHeader `json:"banner_kz" form:"banner_kz"`
 	Status           int                   `form:"status"  enums:"1,2" default:"1"`
 	StartPartnership string                `json:"start_partnership" form:"start_partnership"`
 	EndPartnership   string                `json:"end_partnership" form:"end_partnership"`
