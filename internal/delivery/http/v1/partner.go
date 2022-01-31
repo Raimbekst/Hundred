@@ -87,7 +87,7 @@ func (h *Handler) createPartner(c *fiber.Ctx) error {
 	if file != nil {
 		logo, err = media.GetFileName(c, file)
 		if err != nil {
-			return c.Status(fiber.StatusBadRequest).JSON(response{Message: err.Error()})
+			return c.Status(fiber.StatusInternalServerError).JSON(response{Message: err.Error()})
 		}
 	}
 
@@ -98,15 +98,17 @@ func (h *Handler) createPartner(c *fiber.Ctx) error {
 	if file1 != nil {
 		banner, err = media.GetFileName(c, file1)
 		if err != nil {
-			return c.Status(fiber.StatusBadRequest).JSON(response{Message: err.Error()})
+			return c.Status(fiber.StatusInternalServerError).JSON(response{Message: err.Error()})
 		}
 	}
-	file2, _ := c.FormFile("banner_kz")
+
 	var banner2 string
-	if file1 != nil {
+	file2, _ := c.FormFile("banner_kz")
+
+	if file2 != nil {
 		banner2, err = media.GetFileName(c, file2)
 		if err != nil {
-			return c.Status(fiber.StatusBadRequest).JSON(response{Message: err.Error()})
+			return c.Status(fiber.StatusInternalServerError).JSON(response{Message: err.Error()})
 		}
 	}
 
@@ -329,7 +331,7 @@ func (h *Handler) updatePartner(c *fiber.Ctx) error {
 
 	file2, _ := c.FormFile("banner_kz")
 
-	if file1 != nil {
+	if file2 != nil {
 		bannerKz, err = media.GetFileName(c, file2)
 		if err != nil {
 			return c.Status(fiber.StatusBadRequest).JSON(response{Message: err.Error()})
