@@ -34,7 +34,7 @@ func (h *Handler) initPartnerCategoryRoutes(api fiber.Router) {
 type Partner struct {
 	PartnerName      string                `json:"partner_name" form:"partner_name"`
 	Position         int                   `json:"position" form:"position"`
-	Logo             *multipart.FileHeader `json:"logo" db:"logo"`
+	Logo             *multipart.FileHeader `json:"logo" form:"logo"`
 	LinkWebsite      string                `json:"link_website" form:"link_website"`
 	Banner           *multipart.FileHeader `json:"banner" form:"banner"`
 	BannerKz         *multipart.FileHeader `json:"banner_kz" form:"banner_kz"`
