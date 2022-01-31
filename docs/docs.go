@@ -3542,6 +3542,12 @@ var doc = `{
                         "in": "formData"
                     },
                     {
+                        "type": "file",
+                        "description": "banner kz",
+                        "name": "banner_kz",
+                        "in": "formData"
+                    },
+                    {
                         "type": "integer",
                         "description": "position",
                         "name": "position",
@@ -3764,6 +3770,12 @@ var doc = `{
                         "type": "file",
                         "description": "banner",
                         "name": "banner",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "file",
+                        "description": "banner kz",
+                        "name": "banner_kz",
                         "in": "formData"
                     },
                     {
@@ -4977,6 +4989,9 @@ var doc = `{
             "type": "object",
             "properties": {
                 "banner": {
+                    "type": "string"
+                },
+                "banner_kz": {
                     "type": "string"
                 },
                 "end_partnership": {

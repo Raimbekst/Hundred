@@ -22,12 +22,12 @@ func (p *PartnerRepos) Create(partner domain.Partner) (int, error) {
 	query := fmt.Sprintf(
 		`INSERT INTO 
 				%s
-						(partner_name,position,logo,link_website,banner,status,start_partnership,end_partnership,partner_package,reference) 
+						(partner_name,position,logo,link_website,banner,banner_kz,status,start_partnership,end_partnership,partner_package,reference) 
 				VALUES
-						($1,$2,$3,$4,$5,$6,$7,$8,$9,$10) 
+						($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11) 
 				RETURNING id`, partners)
 
-	err := p.db.QueryRowx(query, partner.PartnerName, partner.Position, partner.Logo, partner.LinkWebsite, partner.Banner, partner.Status, partner.StartPartnership, partner.EndPartnership, partner.PartnerPackage, partner.Reference).Scan(&id)
+	err := p.db.QueryRowx(query, partner.PartnerName, partner.Position, partner.Logo, partner.LinkWebsite, partner.Banner, partner.BannerKz, partner.Status, partner.StartPartnership, partner.EndPartnership, partner.PartnerPackage, partner.Reference).Scan(&id)
 	if err != nil {
 		return 0, fmt.Errorf("repository.Create: %w", err)
 	}
@@ -106,6 +106,9 @@ func (p *PartnerRepos) Update(id int, inp domain.Partner) error {
 	if inp.Banner != "" {
 		setValues = append(setValues, fmt.Sprintf("banner=:banner"))
 	}
+	if inp.BannerKz != "" {
+		setValues = append(setValues, fmt.Sprintf("banner_kz=:banner_kz"))
+	}
 	if inp.Status != 0 {
 		setValues = append(setValues, fmt.Sprintf("status=:status"))
 	}
@@ -151,17 +154,18 @@ func (p *PartnerRepos) Update(id int, inp domain.Partner) error {
 }
 func (p *PartnerRepos) Delete(id int) ([]string, error) {
 	var (
-		images []string
-		logo   string
-		banner string
+		images   []string
+		logo     string
+		banner   string
+		bannerKz string
 	)
-	query := fmt.Sprintf("DELETE FROM %s WHERE id=$1 RETURNING logo,banner", partners)
-	err := p.db.QueryRow(query, id).Scan(&logo, &banner)
+	query := fmt.Sprintf("DELETE FROM %s WHERE id=$1 RETURNING logo,banner,banner_kz", partners)
+	err := p.db.QueryRow(query, id).Scan(&logo, &banner, &bannerKz)
 
 	if err != nil {
 		return nil, fmt.Errorf("repository.Delete: %w", domain.ErrNotFound)
 	}
 
-	images = append(images, logo, banner)
+	images = append(images, logo, banner, bannerKz)
 	return images, nil
 }

@@ -7,6 +7,7 @@ type Partner struct {
 	Logo             string `json:"logo" db:"logo"`
 	LinkWebsite      string `json:"linkWebsite" db:"link_website"`
 	Banner           string `json:"banner" db:"banner"`
+	BannerKz         string `json:"banner_kz" db:"banner_kz"`
 	Status           int    `json:"status" db:"status"`
 	StartPartnership string `json:"start_partnership" db:"start_partnership"`
 	EndPartnership   string `json:"end_partnership" db:"end_partnership"`

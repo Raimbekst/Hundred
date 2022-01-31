@@ -236,6 +236,8 @@ definitions:
     properties:
       banner:
         type: string
+      banner_kz:
+        type: string
       end_partnership:
         type: string
       id:
@@ -2844,6 +2846,10 @@ paths:
         in: formData
         name: banner
         type: file
+      - description: banner kz
+        in: formData
+        name: banner_kz
+        type: file
       - description: position
         in: formData
         name: position
@@ -3000,6 +3006,10 @@ paths:
       - description: banner
         in: formData
         name: banner
+        type: file
+      - description: banner kz
+        in: formData
+        name: banner_kz
         type: file
       - description: position
         in: formData

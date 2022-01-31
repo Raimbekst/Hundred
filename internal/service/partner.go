@@ -42,8 +42,9 @@ func (p *PartnerService) DownloadPartners(file *excelize.File, url string) (*exc
 		file.SetCellValue("Sheet1", "E"+strconv.Itoa(id), value.Reference)
 		file.SetCellValue("Sheet1", "F"+strconv.Itoa(id), url+"/"+"media/"+value.Logo)
 		file.SetCellValue("Sheet1", "G"+strconv.Itoa(id), url+"/"+"media/"+value.Banner)
-		file.SetCellValue("Sheet1", "H"+strconv.Itoa(id), value.StartPartnership)
-		file.SetCellValue("Sheet1", "I"+strconv.Itoa(id), value.EndPartnership)
+		file.SetCellValue("Sheet1", "H"+strconv.Itoa(id), url+"/"+"media/"+value.BannerKz)
+		file.SetCellValue("Sheet1", "I"+strconv.Itoa(id), value.StartPartnership)
+		file.SetCellValue("Sheet1", "J"+strconv.Itoa(id), value.EndPartnership)
 		id = id + 1
 	}
 	return file, nil

@@ -37,6 +37,7 @@ type Partner struct {
 	Logo             *multipart.FileHeader `json:"logo" db:"logo"`
 	LinkWebsite      string                `json:"link_website" form:"link_website"`
 	Banner           *multipart.FileHeader `json:"banner" form:"banner"`
+	BannerKz         string                `json:"banner_kz" form:"banner_kz"`
 	Status           int                   `form:"status"  enums:"1,2" default:"1"`
 	StartPartnership string                `json:"start_partnership" form:"start_partnership"`
 	EndPartnership   string                `json:"end_partnership" form:"end_partnership"`
@@ -53,6 +54,7 @@ type Partner struct {
 // @Param logo  formData file false  "logo"
 // @Param link_website formData string false "link_website"
 // @Param banner formData file false "banner"
+// @Param banner_kz formData file false "banner kz"
 // @Param position formData int false "position"
 // @Param status formData int true "only 1 or 2" Enums(1,2)
 // @Param start_partnership formData string false "start of partnership"
@@ -99,12 +101,21 @@ func (h *Handler) createPartner(c *fiber.Ctx) error {
 			return c.Status(fiber.StatusBadRequest).JSON(response{Message: err.Error()})
 		}
 	}
+	file2, _ := c.FormFile("banner_kz")
+	var banner2 string
+	if file1 != nil {
+		banner2, err = media.GetFileName(c, file2)
+		if err != nil {
+			return c.Status(fiber.StatusBadRequest).JSON(response{Message: err.Error()})
+		}
+	}
 
 	partner := domain.Partner{
 		PartnerName:      input.PartnerName,
 		Logo:             logo,
 		LinkWebsite:      input.LinkWebsite,
 		Banner:           banner,
+		BannerKz:         banner2,
 		Status:           input.Status,
 		StartPartnership: input.StartPartnership,
 		EndPartnership:   input.EndPartnership,
@@ -114,9 +125,11 @@ func (h *Handler) createPartner(c *fiber.Ctx) error {
 	}
 
 	id, err := h.services.Partner.Create(partner)
+
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(response{Message: err.Error()})
 	}
+
 	return c.Status(fiber.StatusCreated).JSON(idResponse{ID: id})
 }
 
@@ -162,6 +175,9 @@ func (h *Handler) getAllPartners(c *fiber.Ctx) error {
 		if value.Banner != "" {
 			value.Banner = url + "/" + "media/" + value.Banner
 		}
+		if value.BannerKz != "" {
+			value.BannerKz = url + "/" + "media/" + value.BannerKz
+		}
 	}
 	return c.Status(fiber.StatusOK).JSON(list)
 
@@ -178,7 +194,7 @@ func (h *Handler) getAllPartners(c *fiber.Ctx) error {
 // @Router /partner/download [get]
 func (h *Handler) downloadPartners(c *fiber.Ctx) error {
 	url := c.BaseURL()
-	cellValue := map[string]string{"A1": "id", "B1": "имя партнера", "C1": "ссылка на сайт", "D1": "статус", "E1": "примечание", "F1": "лого партнера", "G1": "баннер", "H1": "дата начала партнерства", "I1": "дата окончания партнерства"}
+	cellValue := map[string]string{"A1": "id", "B1": "имя партнера", "C1": "ссылка на сайт", "D1": "статус", "E1": "примечание", "F1": "лого партнера", "G1": "баннер", "H1": "баннер kz", "I1": "дата начала партнерства", "J1": "дата окончания партнерства"}
 
 	file, err := excel.File(cellValue)
 
@@ -242,6 +258,10 @@ func (h *Handler) getPartnerById(c *fiber.Ctx) error {
 	if list.Banner != "" {
 		list.Banner = url + "/" + "media/" + list.Banner
 	}
+	if list.BannerKz != "" {
+		list.BannerKz = url + "/" + "media/" + list.BannerKz
+
+	}
 	return c.Status(fiber.StatusOK).JSON(list)
 }
 
@@ -256,6 +276,7 @@ func (h *Handler) getPartnerById(c *fiber.Ctx) error {
 // @Param logo  formData file true "logo"
 // @Param linkWebsite formData string false "link_website"
 // @Param banner formData file false "banner"
+// @Param banner_kz formData file false "banner kz"
 // @Param position formData int false "position"
 // @Param status formData int false "only 1 or 2" Enums(1,2)
 // @Param start_partnership formData string false "start of partnership"
@@ -304,11 +325,23 @@ func (h *Handler) updatePartner(c *fiber.Ctx) error {
 		}
 	}
 
+	var bannerKz string
+
+	file2, _ := c.FormFile("banner_kz")
+
+	if file1 != nil {
+		bannerKz, err = media.GetFileName(c, file2)
+		if err != nil {
+			return c.Status(fiber.StatusBadRequest).JSON(response{Message: err.Error()})
+		}
+	}
+
 	partner := domain.Partner{
 		PartnerName:      input.PartnerName,
 		Logo:             logo,
 		LinkWebsite:      input.LinkWebsite,
 		Banner:           banner,
+		BannerKz:         bannerKz,
 		Status:           input.Status,
 		StartPartnership: input.StartPartnership,
 		EndPartnership:   input.EndPartnership,
