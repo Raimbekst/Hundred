@@ -19,7 +19,7 @@ func NewBannerRepos(db *sqlx.DB) *BannerRepos {
 
 func (b *BannerRepos) Create(banner domain.Banner) (int, error) {
 	var id int
-	query := fmt.Sprintf("INSERT INTO %s(name,status,image,iframe,langaue_type) VALUES($1,$2,$3,$4,$5) RETURNING id", banners)
+	query := fmt.Sprintf("INSERT INTO %s(name,status,image,iframe,language_type) VALUES($1,$2,$3,$4,$5) RETURNING id", banners)
 	err := b.db.QueryRowx(query, banner.Name, banner.Status, banner.Image, banner.Iframe, banner.LanguageType).Scan(&id)
 	if err != nil {
 		return 0, fmt.Errorf("repository.Create: %w", err)
