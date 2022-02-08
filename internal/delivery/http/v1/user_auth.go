@@ -257,11 +257,7 @@ func (h *Handler) userRefresh(c *fiber.Ctx) error {
 // @Failure default {object} response
 // @Router /auth/user/me [get]
 func (h *Handler) userMe(c *fiber.Ctx) error {
-	userType, id := getUser(c)
-
-	if userType != "user" {
-		return c.Status(fiber.StatusBadRequest).JSON(response{Message: "нет доступа"})
-	}
+	_, id := getUser(c)
 
 	list, err := h.services.UserAuth.UserMe(id)
 

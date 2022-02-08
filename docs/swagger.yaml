@@ -329,6 +329,8 @@ definitions:
         type: string
       registered_at:
         type: number
+      user_type:
+        type: string
     type: object
   domain.WinnerInput:
     properties:
@@ -378,8 +380,6 @@ definitions:
       name:
         type: string
       password:
-        maxLength: 64
-        minLength: 8
         type: string
       phone_number:
         type: string
@@ -489,8 +489,6 @@ definitions:
   v1.ResetPasswordInput:
     properties:
       new_password:
-        maxLength: 64
-        minLength: 8
         type: string
       new_password_confirm:
         type: string
@@ -523,8 +521,6 @@ definitions:
       name:
         type: string
       password:
-        maxLength: 64
-        minLength: 8
         type: string
       phone_number:
         type: string
@@ -915,11 +911,9 @@ paths:
       operationId: getAllUsers
       parameters:
       - in: query
-        minimum: 0
         name: limit
         type: integer
       - in: query
-        minimum: 0
         name: page
         type: integer
       produces:
@@ -1004,11 +998,9 @@ paths:
         name: language_type
         type: string
       - in: query
-        minimum: 0
         name: limit
         type: integer
       - in: query
-        minimum: 0
         name: page
         type: integer
       produces:
@@ -1293,11 +1285,9 @@ paths:
         name: start_register_date
         type: number
       - in: query
-        minimum: 0
         name: limit
         type: integer
       - in: query
-        minimum: 0
         name: page
         type: integer
       produces:
@@ -1471,11 +1461,9 @@ paths:
       operationId: get-all-cities
       parameters:
       - in: query
-        minimum: 0
         name: limit
         type: integer
       - in: query
-        minimum: 0
         name: page
         type: integer
       produces:
@@ -1664,11 +1652,9 @@ paths:
       operationId: get-all-conditions
       parameters:
       - in: query
-        minimum: 0
         name: limit
         type: integer
       - in: query
-        minimum: 0
         name: page
         type: integer
       - enum:
@@ -1936,11 +1922,9 @@ paths:
       operationId: get-all-description
       parameters:
       - in: query
-        minimum: 0
         name: limit
         type: integer
       - in: query
-        minimum: 0
         name: page
         type: integer
       - enum:
@@ -2173,11 +2157,9 @@ paths:
       operationId: get-all-faqs
       parameters:
       - in: query
-        minimum: 0
         name: limit
         type: integer
       - in: query
-        minimum: 0
         name: page
         type: integer
       - enum:
@@ -2445,11 +2427,9 @@ paths:
       operationId: getAllMonths
       parameters:
       - in: query
-        minimum: 0
         name: limit
         type: integer
       - in: query
-        minimum: 0
         name: page
         type: integer
       produces:
@@ -2485,11 +2465,9 @@ paths:
       operationId: get-all-notifications
       parameters:
       - in: query
-        minimum: 0
         name: limit
         type: integer
       - in: query
-        minimum: 0
         name: page
         type: integer
       produces:
@@ -2793,11 +2771,9 @@ paths:
         name: status
         type: integer
       - in: query
-        minimum: 0
         name: limit
         type: integer
       - in: query
-        minimum: 0
         name: page
         type: integer
       produces:
@@ -3122,11 +3098,9 @@ paths:
         name: raffle_type
         type: integer
       - in: query
-        minimum: 0
         name: limit
         type: integer
       - in: query
-        minimum: 0
         name: page
         type: integer
       produces:
@@ -3483,11 +3457,9 @@ paths:
         name: raffle_id
         type: integer
       - in: query
-        minimum: 0
         name: limit
         type: integer
       - in: query
-        minimum: 0
         name: page
         type: integer
       produces:

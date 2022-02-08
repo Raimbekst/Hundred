@@ -123,7 +123,7 @@ func (u *UserAuthRepos) SignIn(phone, password string) (*domain.User, error) {
 
 func (u *UserAuthRepos) UserMe(id int) (*domain.UserList, error) {
 	var inp domain.UserList
-	query := fmt.Sprintf("SELECT id,user_name,phone_number,email,age,gender,city FROM %s WHERE id = $1", usersTable)
+	query := fmt.Sprintf("SELECT id,user_name,phone_number,email,age,gender,city,user_type FROM %s WHERE id = $1", usersTable)
 
 	err := u.db.Get(&inp, query, id)
 

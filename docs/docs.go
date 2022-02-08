@@ -540,13 +540,11 @@ var doc = `{
                 "operationId": "getAllUsers",
                 "parameters": [
                     {
-                        "minimum": 0,
                         "type": "integer",
                         "name": "limit",
                         "in": "query"
                     },
                     {
-                        "minimum": 0,
                         "type": "integer",
                         "name": "page",
                         "in": "query"
@@ -676,13 +674,11 @@ var doc = `{
                         "in": "query"
                     },
                     {
-                        "minimum": 0,
                         "type": "integer",
                         "name": "limit",
                         "in": "query"
                     },
                     {
-                        "minimum": 0,
                         "type": "integer",
                         "name": "page",
                         "in": "query"
@@ -1125,13 +1121,11 @@ var doc = `{
                         "in": "query"
                     },
                     {
-                        "minimum": 0,
                         "type": "integer",
                         "name": "limit",
                         "in": "query"
                     },
                     {
-                        "minimum": 0,
                         "type": "integer",
                         "name": "page",
                         "in": "query"
@@ -1399,13 +1393,11 @@ var doc = `{
                 "operationId": "get-all-cities",
                 "parameters": [
                     {
-                        "minimum": 0,
                         "type": "integer",
                         "name": "limit",
                         "in": "query"
                     },
                     {
-                        "minimum": 0,
                         "type": "integer",
                         "name": "page",
                         "in": "query"
@@ -1699,13 +1691,11 @@ var doc = `{
                 "operationId": "get-all-conditions",
                 "parameters": [
                     {
-                        "minimum": 0,
                         "type": "integer",
                         "name": "limit",
                         "in": "query"
                     },
                     {
-                        "minimum": 0,
                         "type": "integer",
                         "name": "page",
                         "in": "query"
@@ -2123,13 +2113,11 @@ var doc = `{
                 "operationId": "get-all-description",
                 "parameters": [
                     {
-                        "minimum": 0,
                         "type": "integer",
                         "name": "limit",
                         "in": "query"
                     },
                     {
-                        "minimum": 0,
                         "type": "integer",
                         "name": "page",
                         "in": "query"
@@ -2493,13 +2481,11 @@ var doc = `{
                 "operationId": "get-all-faqs",
                 "parameters": [
                     {
-                        "minimum": 0,
                         "type": "integer",
                         "name": "limit",
                         "in": "query"
                     },
                     {
-                        "minimum": 0,
                         "type": "integer",
                         "name": "page",
                         "in": "query"
@@ -2917,13 +2903,11 @@ var doc = `{
                 "operationId": "getAllMonths",
                 "parameters": [
                     {
-                        "minimum": 0,
                         "type": "integer",
                         "name": "limit",
                         "in": "query"
                     },
                     {
-                        "minimum": 0,
                         "type": "integer",
                         "name": "page",
                         "in": "query"
@@ -2978,13 +2962,11 @@ var doc = `{
                 "operationId": "get-all-notifications",
                 "parameters": [
                     {
-                        "minimum": 0,
                         "type": "integer",
                         "name": "limit",
                         "in": "query"
                     },
                     {
-                        "minimum": 0,
                         "type": "integer",
                         "name": "page",
                         "in": "query"
@@ -3455,13 +3437,11 @@ var doc = `{
                         "in": "query"
                     },
                     {
-                        "minimum": 0,
                         "type": "integer",
                         "name": "limit",
                         "in": "query"
                     },
                     {
-                        "minimum": 0,
                         "type": "integer",
                         "name": "page",
                         "in": "query"
@@ -3956,13 +3936,11 @@ var doc = `{
                         "in": "query"
                     },
                     {
-                        "minimum": 0,
                         "type": "integer",
                         "name": "limit",
                         "in": "query"
                     },
                     {
-                        "minimum": 0,
                         "type": "integer",
                         "name": "page",
                         "in": "query"
@@ -4519,13 +4497,11 @@ var doc = `{
                         "in": "query"
                     },
                     {
-                        "minimum": 0,
                         "type": "integer",
                         "name": "limit",
                         "in": "query"
                     },
                     {
-                        "minimum": 0,
                         "type": "integer",
                         "name": "page",
                         "in": "query"
@@ -5131,6 +5107,9 @@ var doc = `{
                 },
                 "registered_at": {
                     "type": "number"
+                },
+                "user_type": {
+                    "type": "string"
                 }
             }
         },
@@ -5213,9 +5192,7 @@ var doc = `{
                     "type": "string"
                 },
                 "password": {
-                    "type": "string",
-                    "maxLength": 64,
-                    "minLength": 8
+                    "type": "string"
                 },
                 "phone_number": {
                     "type": "string"
@@ -5374,9 +5351,7 @@ var doc = `{
             ],
             "properties": {
                 "new_password": {
-                    "type": "string",
-                    "maxLength": 64,
-                    "minLength": 8
+                    "type": "string"
                 },
                 "new_password_confirm": {
                     "type": "string"
@@ -5428,9 +5403,7 @@ var doc = `{
                     "type": "string"
                 },
                 "password": {
-                    "type": "string",
-                    "maxLength": 64,
-                    "minLength": 8
+                    "type": "string"
                 },
                 "phone_number": {
                     "type": "string"

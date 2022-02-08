@@ -20,7 +20,8 @@ type UserList struct {
 	Email        string  `json:"email" db:"email"`
 	Age          int     `json:"age" db:"age"`
 	Gender       string  `json:"gender" db:"gender"`
-	City         string  `json:"city" db:"city"`
+	UserType     string  `json:"user_type,omitempty" db:"user_type"`
+	City         *string `json:"city" db:"city"`
 	IsBlocked    bool    `json:"is_blocked" db:"is_blocked"`
 	RegisteredAt float64 `json:"registered_at" db:"registered_at"`
 }
