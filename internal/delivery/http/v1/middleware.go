@@ -79,10 +79,13 @@ func (h *Handler) sendNotification(ctx context.Context) {
 			fmt.Println(err)
 
 		}
+		if tokens == nil {
+			tokens = []string{"Random_token"}
+		}
 		if list != nil {
 
 			for _, value := range list {
-				fmt.Println(value)
+
 				res, err := h.firebaseNotification(ctx, value, tokens, value.Id)
 
 				if err != nil {
