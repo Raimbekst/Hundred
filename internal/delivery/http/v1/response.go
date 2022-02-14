@@ -72,6 +72,7 @@ func (h *Handler) firebaseNotification(ctx context.Context, noty domain.Notifica
 			"link":         noty.Link,
 			"partner_logo": noty.Logo,
 		},
+
 		Tokens: tokens,
 	}
 

@@ -1,0 +1,1 @@
+ALTER TABLE checks alter column check_date type timestamp

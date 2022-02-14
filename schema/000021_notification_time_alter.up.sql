@@ -1,0 +1,1 @@
+ALTER TABLE notifications ADD COLUMN noty_time int not null default 0;

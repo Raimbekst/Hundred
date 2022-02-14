@@ -23,11 +23,11 @@ func (n *NotificationRepos) Create(noty domain.Notification) (int, error) {
 	query := fmt.Sprintf(
 		`INSERT INTO 
 						%s
-					(title,text,partner_id,link,reference,noty_date,status,noty_getters)	
+					(title,text,partner_id,link,reference,noty_date,noty_time,status,noty_getters)	
 						VALUES
-					($1,$2,$3,$4,$5,to_timestamp($6) at time zone 'GMT',$7,$8) RETURNING id`, notifications)
+					($1,$2,$3,$4,$5,to_timestamp($6) at time zone 'GMT',$7,$8,$9) RETURNING id`, notifications)
 
-	err := n.db.QueryRowx(query, noty.Title, noty.Text, noty.PartnerId, noty.Link, noty.Reference, noty.Date, noty.Status, noty.Getters).Scan(&id)
+	err := n.db.QueryRowx(query, noty.Title, noty.Text, noty.PartnerId, noty.Link, noty.Reference, noty.Date, noty.Time, noty.Status, noty.Getters).Scan(&id)
 
 	if err != nil {
 		return 0, fmt.Errorf("repository.Create: %w", err)
@@ -136,7 +136,7 @@ func (n *NotificationRepos) GetAll(page domain.Pagination) (*domain.GetAllNotifi
 	query := fmt.Sprintf(
 		`SELECT 
 						n.id,n.title,n.text,
-						n.link,
+						n.link,n.noty_time,
 						extract(epoch from n.noty_date::timestamp at time zone 'GMT') "noty_date",
 						n.status,n.noty_getters
 					FROM %s n
@@ -149,6 +149,7 @@ func (n *NotificationRepos) GetAll(page domain.Pagination) (*domain.GetAllNotifi
 	}
 
 	var gettersNotification domain.GetterList
+
 	for _, value := range inp {
 
 		queryGetAllUsers := fmt.Sprintf("SELECT * FROM %s WHERE notification_id = $1", getters)
@@ -186,7 +187,7 @@ func (n *NotificationRepos) GetById(id int) (*domain.Notification, error) {
 	query := fmt.Sprintf(
 		`SELECT 
 						n.id,n.title,n.text,
-						n.link,
+						n.link,n.noty_time,
 						extract(epoch from n.noty_date::timestamp at time zone 'GMT') "noty_date",
 						n.status,n.noty_getters
 					FROM %s n
@@ -240,6 +241,12 @@ func (n *NotificationRepos) Update(id int, inp domain.Notification) error {
 	if inp.Date != 0 {
 		setValues = append(setValues, fmt.Sprintf(" noty_date = to_timestamp($%d) at time zone 'GMT' ", argId))
 		args = append(args, inp.Date)
+		argId++
+	}
+
+	if inp.Time != 0 {
+		setValues = append(setValues, fmt.Sprintf("noty_time = $%d", argId))
+		args = append(args, inp.Time)
 		argId++
 	}
 

@@ -99,6 +99,7 @@ func (h *Handler) createNotyForAllUsers(c *fiber.Ctx) error {
 		Link:      input.Link,
 		Reference: input.Reference,
 		Date:      notyDate,
+		Time:      input.Time,
 		Status:    1,
 		Getters:   1,
 		Logo:      logo,
@@ -150,6 +151,7 @@ func (h *Handler) createNotyForSpecificUser(c *fiber.Ctx) error {
 	}
 
 	ok, errs := validationStructs.ValidateStruct(input)
+
 	if !ok {
 		return c.Status(fiber.StatusBadRequest).JSON(errs)
 	}
@@ -170,6 +172,9 @@ func (h *Handler) createNotyForSpecificUser(c *fiber.Ctx) error {
 		return c.Status(fiber.StatusInternalServerError).JSON(response{Message: err.Error()})
 	}
 
+	if tokens == nil {
+		tokens = []string{"Random"}
+	}
 	res, err := h.firebaseNotification(h.ctx, inp, tokens, idInt)
 
 	if err != nil {
@@ -312,16 +317,21 @@ func (h *Handler) updateNotification(c *fiber.Ctx) error {
 		return c.Status(fiber.StatusUnauthorized).JSON(response{Message: "нет доступа"})
 	}
 	var input Notification
+
 	if err := c.BodyParser(&input); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(response{Message: err.Error()})
 	}
+
+	notyDate := input.Date + float64(input.Time)
+
 	noty := domain.Notification{
 		Title:     input.Title,
 		Text:      input.Text,
 		PartnerId: &input.PartnerId,
 		Link:      input.Link,
 		Reference: input.Reference,
-		Date:      input.Date,
+		Date:      notyDate,
+		Time:      input.Time,
 	}
 
 	id, err := strconv.Atoi(c.Params("id"))
