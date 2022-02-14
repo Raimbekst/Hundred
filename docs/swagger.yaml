@@ -1054,6 +1054,7 @@ paths:
         - 2
         in: formData
         name: status
+        required: true
         type: integer
       - description: image
         in: formData
@@ -1235,6 +1236,7 @@ paths:
         - 2
         in: formData
         name: status
+        required: true
         type: integer
       - description: image
         in: formData

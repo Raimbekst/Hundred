@@ -751,7 +751,8 @@ var doc = `{
                         "type": "integer",
                         "description": "only 1 or 2",
                         "name": "status",
-                        "in": "formData"
+                        "in": "formData",
+                        "required": true
                     },
                     {
                         "type": "file",
@@ -831,7 +832,8 @@ var doc = `{
                         "type": "integer",
                         "description": "only 1 or 2",
                         "name": "status",
-                        "in": "formData"
+                        "in": "formData",
+                        "required": true
                     },
                     {
                         "type": "file",

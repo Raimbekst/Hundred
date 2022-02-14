@@ -100,7 +100,7 @@ func (h *Handler) createBannerKz(c *fiber.Ctx) error {
 // @Accept  multipart/form-data
 // @Produce  json
 // @Param name formData string false "name of banner"
-// @Param status formData int false "only 1 or 2" Enums(1,2)
+// @Param status formData int true "only 1 or 2" Enums(1,2)
 // @Param image formData file false "image"
 // @Param iframe formData string false "iframe"
 // @Success 201 {object} idResponse
