@@ -156,11 +156,15 @@ func (h *Handler) createNotyForSpecificUser(c *fiber.Ctx) error {
 		return c.Status(fiber.StatusBadRequest).JSON(errs)
 	}
 
+	hour := time.Now().Hour() * 3600
+	minute := time.Now().Minute() * 60
+
 	inp := domain.Notification{
 		Title:   input.Title,
 		Text:    input.Text,
 		Link:    input.Link,
 		Date:    float64(time.Now().Unix()),
+		Time:    hour + minute,
 		Status:  1,
 		Getters: 2,
 		Ids:     input.UserIds,

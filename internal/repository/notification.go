@@ -67,11 +67,11 @@ func (n *NotificationRepos) CreateForUser(noty domain.Notification) ([]string, i
 	query := fmt.Sprintf(
 		`INSERT INTO 
 						%s
-					(title,text,link,noty_date,status,noty_getters)
+					(title,text,link,noty_date,noty_time,status,noty_getters)
 						VALUES
-					($1,$2,$3,to_timestamp($4) at time zone 'GMT',$5,$6) RETURNING id`, notifications)
+					($1,$2,$3,to_timestamp($4) at time zone 'GMT',$5,$6,$7) RETURNING id`, notifications)
 
-	err := tx.QueryRowx(query, noty.Title, noty.Text, noty.Link, noty.Date, noty.Status, noty.Getters).Scan(&id)
+	err := tx.QueryRowx(query, noty.Title, noty.Text, noty.Link, noty.Date, noty.Time, noty.Status, noty.Getters).Scan(&id)
 
 	if err != nil {
 		if txErr := tx.Rollback(); txErr != nil {
