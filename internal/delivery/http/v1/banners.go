@@ -60,6 +60,7 @@ func (h *Handler) createBannerKz(c *fiber.Ctx) error {
 	if userType != "admin" {
 		return c.Status(fiber.StatusUnauthorized).JSON(response{Message: "нет доступа"})
 	}
+
 	var (
 		input Banner
 		err   error
@@ -69,12 +70,12 @@ func (h *Handler) createBannerKz(c *fiber.Ctx) error {
 		return c.Status(fiber.StatusBadRequest).JSON(response{Message: err.Error()})
 	}
 
+	input.Image, _ = c.FormFile("image")
+
 	var image string
 
-	file, _ := c.FormFile("image")
-
-	if file != nil {
-		image, err = media.GetFileName(c, file)
+	if input.Image != nil {
+		image, err = media.GetFileName(c, input.Image)
 		if err != nil {
 			return c.Status(fiber.StatusBadRequest).JSON(response{Message: err.Error()})
 		}
@@ -109,27 +110,23 @@ func (h *Handler) createBannerKz(c *fiber.Ctx) error {
 // @Failure default {object} response
 // @Router /banner [post]
 func (h *Handler) createBanner(c *fiber.Ctx) error {
-
 	userType, _ := getUser(c)
 
 	if userType != "admin" {
 		return c.Status(fiber.StatusUnauthorized).JSON(response{Message: "нет доступа"})
 	}
-	var (
-		input Banner
-		err   error
-	)
 
+	var input Banner
+	var err error
 	if err := c.BodyParser(&input); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(response{Message: err.Error()})
 	}
+	input.Image, _ = c.FormFile("image")
 
 	var image string
 
-	file, _ := c.FormFile("image")
-
-	if file != nil {
-		image, err = media.GetFileName(c, file)
+	if input.Image != nil {
+		image, err = media.GetFileName(c, input.Image)
 		if err != nil {
 			return c.Status(fiber.StatusBadRequest).JSON(response{Message: err.Error()})
 		}
@@ -142,6 +139,7 @@ func (h *Handler) createBanner(c *fiber.Ctx) error {
 		Iframe:       input.Iframe,
 		LanguageType: "ru",
 	}
+
 	id, err := h.services.Banner.Create(banner)
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(response{Message: err.Error()})

@@ -68,7 +68,7 @@ type Partner interface {
 	Create(partner domain.Partner) (int, error)
 	GetAll(page domain.Pagination, status int) (*domain.GetAllPartnersCategoryResponse, error)
 	GetById(id int) (domain.Partner, error)
-	Update(id int, inp domain.Partner) error
+	Update(id int, inp domain.Partner) ([]string, error)
 	Delete(id int) ([]string, error)
 }
 
@@ -76,7 +76,7 @@ type Banner interface {
 	Create(banner domain.Banner) (int, error)
 	GetAll(page domain.Pagination, status int, lang string) (*domain.GetAllBannersCategoryResponse, error)
 	GetById(id int) (domain.Banner, error)
-	Update(id int, inp domain.Banner) error
+	Update(id int, inp domain.Banner) (string, error)
 	Delete(id int) (string, error)
 }
 

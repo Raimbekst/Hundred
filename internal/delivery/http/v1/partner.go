@@ -291,16 +291,17 @@ func (h *Handler) getPartnerById(c *fiber.Ctx) error {
 // @Failure default {object} response
 // @Router /partner/{id} [put]
 func (h *Handler) updatePartner(c *fiber.Ctx) error {
+	var (
+		input Partner
+		err   error
+	)
+
 	userType, _ := getUser(c)
 
 	if userType != "admin" {
 		return c.Status(fiber.StatusUnauthorized).JSON(response{Message: "нет доступа"})
 	}
 
-	var (
-		input Partner
-		err   error
-	)
 	if err := c.BodyParser(&input); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(response{Message: err.Error()})
 	}

@@ -54,7 +54,16 @@ func (p *PartnerService) GetById(id int) (domain.Partner, error) {
 	return p.repos.GetById(id)
 }
 func (p *PartnerService) Update(id int, inp domain.Partner) error {
-	return p.repos.Update(id, inp)
+	img, err := p.repos.Update(id, inp)
+	for i, _ := range img {
+		if img[i] != "" {
+			err = media.DeleteImage(img[i])
+			if err != nil {
+				return fmt.Errorf("service.Delete: %w", err)
+			}
+		}
+	}
+	return nil
 }
 func (p *PartnerService) Delete(id int) error {
 	img, err := p.repos.Delete(id)

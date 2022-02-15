@@ -33,7 +33,7 @@ func (h *Handler) Init(cfg *config.Config) *fiber.App {
 	if cfg.Environment == config.Prod {
 		docs.SwaggerInfo.Host = fmt.Sprintf("%s", cfg.HTTP.Host)
 	}
-	router := fiber.New()
+	router := fiber.New(fiber.Config{BodyLimit: 100 * 1024 * 1024})
 	router.Use(logger.New())
 
 	var ConfigDefault = cors.Config{

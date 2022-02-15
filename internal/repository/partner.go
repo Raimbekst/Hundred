@@ -86,7 +86,10 @@ func (p PartnerRepos) GetById(id int) (domain.Partner, error) {
 	return partner, nil
 }
 
-func (p *PartnerRepos) Update(id int, inp domain.Partner) error {
+func (p *PartnerRepos) Update(id int, inp domain.Partner) ([]string, error) {
+
+	var images []string
+	var imageInput domain.Partner
 	setValues := make([]string, 0, reflect.TypeOf(domain.Partner{}).NumField())
 
 	if inp.PartnerName != "" {
@@ -94,6 +97,7 @@ func (p *PartnerRepos) Update(id int, inp domain.Partner) error {
 	}
 	if inp.Logo != "" {
 		setValues = append(setValues, fmt.Sprintf("logo=:logo"))
+		images = append(images, "logo")
 	}
 	if inp.LinkWebsite != "" {
 		setValues = append(setValues, fmt.Sprintf("link_website=:link_website"))
@@ -105,9 +109,11 @@ func (p *PartnerRepos) Update(id int, inp domain.Partner) error {
 
 	if inp.Banner != "" {
 		setValues = append(setValues, fmt.Sprintf("banner=:banner"))
+		images = append(images, "banner")
 	}
 	if inp.BannerKz != "" {
 		setValues = append(setValues, fmt.Sprintf("banner_kz=:banner_kz"))
+		images = append(images, "banner_kz")
 	}
 	if inp.Status != 0 {
 		setValues = append(setValues, fmt.Sprintf("status=:status"))
@@ -126,10 +132,21 @@ func (p *PartnerRepos) Update(id int, inp domain.Partner) error {
 		setValues = append(setValues, fmt.Sprintf("reference=:reference"))
 	}
 
+	imageString := strings.Join(images, ", ")
+	querySelect := fmt.Sprintf("SELECT %s FROM %s WHERE id = $1", imageString, partners)
+
+	err := p.db.Get(&imageInput, querySelect, id)
+
+	if err != nil {
+		return nil, fmt.Errorf("repository.Update: %w", err)
+	}
+	images = nil
+	images = append(images, imageInput.Logo, imageInput.Banner, imageInput.BannerKz)
+
 	setQuery := strings.Join(setValues, ", ")
 
 	if setQuery == "" {
-		return errors.New("empty body")
+		return nil, errors.New("empty body")
 	}
 
 	query := fmt.Sprintf("UPDATE %s SET %s WHERE id=%d", partners, setQuery, id)
@@ -137,19 +154,19 @@ func (p *PartnerRepos) Update(id int, inp domain.Partner) error {
 	result, err := p.db.NamedExec(query, inp)
 
 	if err != nil {
-		return fmt.Errorf("repository.Update: %w", err)
+		return nil, fmt.Errorf("repository.Update: %w", err)
 	}
 
 	affected, err := result.RowsAffected()
 	if err != nil {
-		return fmt.Errorf("repository.Update: %w", err)
+		return nil, fmt.Errorf("repository.Update: %w", err)
 	}
 
 	if affected == 0 {
-		return fmt.Errorf("repository.Update: %w", domain.ErrNotFound)
+		return nil, fmt.Errorf("repository.Update: %w", domain.ErrNotFound)
 	}
 
-	return nil
+	return images, nil
 
 }
 func (p *PartnerRepos) Delete(id int) ([]string, error) {

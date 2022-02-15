@@ -30,6 +30,7 @@ func (f *FaqsRepos) GetAllDesc(page domain.Pagination, lang string) (*domain.Get
 		setValues string
 		count     int
 	)
+
 	if lang != "" {
 		setValues = fmt.Sprintf("WHERE language_type = '%s'", lang)
 	}
@@ -145,6 +146,7 @@ func (f *FaqsRepos) GetAll(page domain.Pagination, lang string) (*domain.GetAllF
 		setValues string
 		count     int
 	)
+
 	if lang != "" {
 		setValues = fmt.Sprintf("WHERE language_type = '%s'", lang)
 	}

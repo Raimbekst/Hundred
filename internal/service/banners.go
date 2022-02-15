@@ -25,7 +25,18 @@ func (b *BannerService) GetById(id int) (domain.Banner, error) {
 	return b.repos.GetById(id)
 }
 func (b *BannerService) Update(id int, inp domain.Banner) error {
-	return b.repos.Update(id, inp)
+	image, err := b.repos.Update(id, inp)
+
+	if err != nil {
+		return fmt.Errorf("service.Update: %w", err)
+	}
+	if image != "" {
+		err = media.DeleteImage(image)
+		if err != nil {
+			return fmt.Errorf("service.Update: %w", err)
+		}
+	}
+	return nil
 }
 func (b *BannerService) Delete(id int) error {
 	img, err := b.repos.Delete(id)

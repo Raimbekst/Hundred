@@ -88,7 +88,18 @@ func (b *BannerRepos) GetById(id int) (domain.Banner, error) {
 	return banner, nil
 }
 
-func (b *BannerRepos) Update(id int, inp domain.Banner) error {
+func (b *BannerRepos) Update(id int, inp domain.Banner) (string, error) {
+
+	var imageInput domain.Banner
+
+	querySelect := fmt.Sprintf("SELECT image FROM %s WHERE id = $1", banners)
+
+	err := b.db.Get(&imageInput, querySelect, id)
+
+	if err != nil {
+		return "", fmt.Errorf("repository.Update: %w", err)
+	}
+
 	setValues := make([]string, 0, reflect.TypeOf(domain.Banner{}).NumField())
 
 	if inp.Name != "" {
@@ -110,29 +121,24 @@ func (b *BannerRepos) Update(id int, inp domain.Banner) error {
 	setQuery := strings.Join(setValues, ", ")
 
 	if setQuery == "" {
-		return errors.New("empty body")
+		return "", errors.New("empty body")
 	}
 
 	query := fmt.Sprintf("UPDATE %s SET %s WHERE id=%d", banners, setQuery, id)
 
-	result, err := b.db.NamedExec(query, inp)
+	rows, err := b.db.NamedExec(query, inp)
 
 	if err != nil {
-		return fmt.Errorf("repository.Update: %w", err)
+		return "", fmt.Errorf("repository.Update: %w", err)
 	}
-
-	affected, err := result.RowsAffected()
-
+	affected, err := rows.RowsAffected()
 	if err != nil {
-		return fmt.Errorf("repository.Update: %w", err)
+		return "", fmt.Errorf("repository.Update: %w", err)
 	}
-
 	if affected == 0 {
-		return fmt.Errorf("repository.Update: %w", domain.ErrNotFound)
+		return "", fmt.Errorf("repository.Update: %w", err)
 	}
-
-	return nil
-
+	return imageInput.Image, nil
 }
 
 func (b *BannerRepos) Delete(id int) (string, error) {
