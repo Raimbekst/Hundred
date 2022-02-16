@@ -1,6 +1,7 @@
 package media
 
 import (
+	"encoding/base64"
 	"errors"
 	"fmt"
 	"github.com/gofiber/fiber/v2"
@@ -41,4 +42,27 @@ func DeleteImage(image string) error {
 	mkdir := "./media"
 
 	return os.Remove(mkdir + "/" + image)
+}
+
+func Base64ToImage(code string, filename string) (string, error) {
+	file, _ := base64.StdEncoding.DecodeString(code)
+	f, err := os.Create("./media/" + filename + ".jpg")
+
+	if err != nil {
+		return "", fmt.Errorf("media.base64ToImage: %w", err)
+	}
+	defer func(f *os.File) {
+		err := f.Close()
+		if err != nil {
+			return
+		}
+	}(f)
+
+	if _, err := f.Write(file); err != nil {
+		return "", fmt.Errorf("media.base64ToImage: %w", err)
+	}
+	if err := f.Sync(); err != nil {
+		return "", fmt.Errorf("media.base64ToImage: %w", err)
+	}
+	return filename + ".jpg", nil
 }

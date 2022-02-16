@@ -3732,7 +3732,7 @@ var doc = `{
                 ],
                 "description": "update  partner",
                 "consumes": [
-                    "multipart/form-data"
+                    "application/json"
                 ],
                 "produces": [
                     "application/json"
@@ -3749,76 +3749,13 @@ var doc = `{
                         "required": true
                     },
                     {
-                        "type": "string",
-                        "description": "partner name",
-                        "name": "partner_name",
-                        "in": "formData",
-                        "required": true
-                    },
-                    {
-                        "type": "file",
-                        "description": "logo",
-                        "name": "logo",
-                        "in": "formData",
-                        "required": true
-                    },
-                    {
-                        "type": "string",
-                        "description": "link_website",
-                        "name": "linkWebsite",
-                        "in": "formData"
-                    },
-                    {
-                        "type": "file",
-                        "description": "banner",
-                        "name": "banner",
-                        "in": "formData"
-                    },
-                    {
-                        "type": "file",
-                        "description": "banner kz",
-                        "name": "banner_kz",
-                        "in": "formData"
-                    },
-                    {
-                        "type": "integer",
-                        "description": "position",
-                        "name": "position",
-                        "in": "formData"
-                    },
-                    {
-                        "enum": [
-                            1,
-                            2
-                        ],
-                        "type": "integer",
-                        "description": "only 1 or 2",
-                        "name": "status",
-                        "in": "formData"
-                    },
-                    {
-                        "type": "string",
-                        "description": "start of partnership",
-                        "name": "start_partnership",
-                        "in": "formData"
-                    },
-                    {
-                        "type": "string",
-                        "description": "end of partnership",
-                        "name": "end_partnership",
-                        "in": "formData"
-                    },
-                    {
-                        "type": "string",
-                        "description": "partner package",
-                        "name": "partner_package",
-                        "in": "formData"
-                    },
-                    {
-                        "type": "string",
-                        "description": "reference",
-                        "name": "reference",
-                        "in": "formData"
+                        "description": "update partner",
+                        "name": "data",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/domain.UpdatePartner"
+                        }
                     }
                 ],
                 "responses": {
@@ -5066,6 +5003,49 @@ var doc = `{
                 },
                 "user_name": {
                     "type": "string"
+                }
+            }
+        },
+        "domain.UpdatePartner": {
+            "type": "object",
+            "properties": {
+                "banner": {
+                    "type": "string"
+                },
+                "banner_kz": {
+                    "type": "string"
+                },
+                "end_partnership": {
+                    "type": "string"
+                },
+                "link_website": {
+                    "type": "string"
+                },
+                "logo": {
+                    "type": "string"
+                },
+                "partner_name": {
+                    "type": "string"
+                },
+                "partner_package": {
+                    "type": "string"
+                },
+                "position": {
+                    "type": "integer"
+                },
+                "reference": {
+                    "type": "string"
+                },
+                "start_partnership": {
+                    "type": "string"
+                },
+                "status": {
+                    "type": "integer",
+                    "default": 1,
+                    "enum": [
+                        1,
+                        2
+                    ]
                 }
             }
         },

@@ -77,7 +77,7 @@ type Partner interface {
 	Create(partner domain.Partner) (int, error)
 	GetAll(page domain.Pagination, status int) (*domain.GetAllPartnersCategoryResponse, error)
 	GetById(id int) (domain.Partner, error)
-	Update(id int, inp domain.Partner) error
+	Update(id int, inp domain.UpdatePartner) error
 	Delete(id int) error
 
 	DownloadPartners(file *excelize.File, url string) (*excelize.File, error)

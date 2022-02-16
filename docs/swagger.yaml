@@ -286,6 +286,35 @@ definitions:
       user_name:
         type: string
     type: object
+  domain.UpdatePartner:
+    properties:
+      banner:
+        type: string
+      banner_kz:
+        type: string
+      end_partnership:
+        type: string
+      link_website:
+        type: string
+      logo:
+        type: string
+      partner_name:
+        type: string
+      partner_package:
+        type: string
+      position:
+        type: integer
+      reference:
+        type: string
+      start_partnership:
+        type: string
+      status:
+        default: 1
+        enum:
+        - 1
+        - 2
+        type: integer
+    type: object
   domain.UserChecks:
     properties:
       check_amount:
@@ -2987,7 +3016,7 @@ paths:
       - partner
     put:
       consumes:
-      - multipart/form-data
+      - application/json
       description: update  partner
       parameters:
       - description: partner id
@@ -2995,55 +3024,12 @@ paths:
         name: id
         required: true
         type: string
-      - description: partner name
-        in: formData
-        name: partner_name
+      - description: update partner
+        in: body
+        name: data
         required: true
-        type: string
-      - description: logo
-        in: formData
-        name: logo
-        required: true
-        type: file
-      - description: link_website
-        in: formData
-        name: linkWebsite
-        type: string
-      - description: banner
-        in: formData
-        name: banner
-        type: file
-      - description: banner kz
-        in: formData
-        name: banner_kz
-        type: file
-      - description: position
-        in: formData
-        name: position
-        type: integer
-      - description: only 1 or 2
-        enum:
-        - 1
-        - 2
-        in: formData
-        name: status
-        type: integer
-      - description: start of partnership
-        in: formData
-        name: start_partnership
-        type: string
-      - description: end of partnership
-        in: formData
-        name: end_partnership
-        type: string
-      - description: partner package
-        in: formData
-        name: partner_package
-        type: string
-      - description: reference
-        in: formData
-        name: reference
-        type: string
+        schema:
+          $ref: '#/definitions/domain.UpdatePartner'
       produces:
       - application/json
       responses:

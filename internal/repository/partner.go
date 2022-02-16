@@ -86,18 +86,32 @@ func (p PartnerRepos) GetById(id int) (domain.Partner, error) {
 	return partner, nil
 }
 
-func (p *PartnerRepos) Update(id int, inp domain.Partner) ([]string, error) {
+func (p *PartnerRepos) Update(id int, inp domain.UpdatePartner) ([]string, error) {
 
 	var images []string
+
+	part := domain.Partner{
+		Position:         inp.Position,
+		PartnerName:      inp.PartnerName,
+		LinkWebsite:      inp.LinkWebsite,
+		Status:           inp.Status,
+		StartPartnership: inp.StartPartnership,
+		EndPartnership:   inp.EndPartnership,
+		PartnerPackage:   inp.PartnerPackage,
+		Reference:        inp.Reference,
+	}
+
 	var imageInput domain.Partner
-	setValues := make([]string, 0, reflect.TypeOf(domain.Partner{}).NumField())
+	setValues := make([]string, 0, reflect.TypeOf(domain.UpdatePartner{}).NumField())
 
 	if inp.PartnerName != "" {
 		setValues = append(setValues, fmt.Sprintf("partner_name=:partner_name"))
+
 	}
-	if inp.Logo != "" {
+	if inp.Logo != nil {
 		setValues = append(setValues, fmt.Sprintf("logo=:logo"))
 		images = append(images, "logo")
+		part.Logo = *inp.Logo
 	}
 	if inp.LinkWebsite != "" {
 		setValues = append(setValues, fmt.Sprintf("link_website=:link_website"))
@@ -107,13 +121,15 @@ func (p *PartnerRepos) Update(id int, inp domain.Partner) ([]string, error) {
 		setValues = append(setValues, fmt.Sprintf("position=:position"))
 	}
 
-	if inp.Banner != "" {
+	if inp.Banner != nil {
 		setValues = append(setValues, fmt.Sprintf("banner=:banner"))
 		images = append(images, "banner")
+		part.Banner = *inp.Banner
 	}
-	if inp.BannerKz != "" {
+	if inp.BannerKz != nil {
 		setValues = append(setValues, fmt.Sprintf("banner_kz=:banner_kz"))
 		images = append(images, "banner_kz")
+		part.BannerKz = *inp.BannerKz
 	}
 	if inp.Status != 0 {
 		setValues = append(setValues, fmt.Sprintf("status=:status"))
@@ -133,6 +149,7 @@ func (p *PartnerRepos) Update(id int, inp domain.Partner) ([]string, error) {
 	}
 
 	imageString := strings.Join(images, ", ")
+
 	querySelect := fmt.Sprintf("SELECT %s FROM %s WHERE id = $1", imageString, partners)
 
 	err := p.db.Get(&imageInput, querySelect, id)
@@ -140,6 +157,7 @@ func (p *PartnerRepos) Update(id int, inp domain.Partner) ([]string, error) {
 	if err != nil {
 		return nil, fmt.Errorf("repository.Update: %w", err)
 	}
+
 	images = nil
 	images = append(images, imageInput.Logo, imageInput.Banner, imageInput.BannerKz)
 
@@ -151,7 +169,7 @@ func (p *PartnerRepos) Update(id int, inp domain.Partner) ([]string, error) {
 
 	query := fmt.Sprintf("UPDATE %s SET %s WHERE id=%d", partners, setQuery, id)
 
-	result, err := p.db.NamedExec(query, inp)
+	result, err := p.db.NamedExec(query, part)
 
 	if err != nil {
 		return nil, fmt.Errorf("repository.Update: %w", err)
@@ -165,7 +183,6 @@ func (p *PartnerRepos) Update(id int, inp domain.Partner) ([]string, error) {
 	if affected == 0 {
 		return nil, fmt.Errorf("repository.Update: %w", domain.ErrNotFound)
 	}
-
 	return images, nil
 
 }

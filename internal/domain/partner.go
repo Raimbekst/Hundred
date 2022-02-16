@@ -15,6 +15,20 @@ type Partner struct {
 	Reference        string `json:"reference" db:"reference"`
 }
 
+type UpdatePartner struct {
+	PartnerName      string  `json:"partner_name" form:"partner_name"`
+	Position         int     `json:"position" form:"position"`
+	Logo             *string `json:"logo" form:"logo"`
+	LinkWebsite      string  `json:"link_website" form:"link_website"`
+	Banner           *string `json:"banner" form:"banner"`
+	BannerKz         *string `json:"banner_kz" form:"banner_kz"`
+	Status           int     `form:"status"  enums:"1,2" default:"1"`
+	StartPartnership string  `json:"start_partnership" form:"start_partnership"`
+	EndPartnership   string  `json:"end_partnership" form:"end_partnership"`
+	PartnerPackage   string  `json:"partner_package" form:"partner_package"`
+	Reference        string  `json:"reference" form:"reference"`
+}
+
 type GetAllPartnersCategoryResponse struct {
 	Data     []*Partner     `json:"data"`
 	PageInfo PaginationPage `json:"page-info"`

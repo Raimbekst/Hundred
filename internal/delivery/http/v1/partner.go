@@ -8,6 +8,7 @@ import (
 	"errors"
 	"github.com/gofiber/fiber/v2"
 	jwtware "github.com/gofiber/jwt/v3"
+	"github.com/google/uuid"
 	"mime/multipart"
 	"strconv"
 	"time"
@@ -271,20 +272,10 @@ func (h *Handler) getPartnerById(c *fiber.Ctx) error {
 // @Tags partner
 // @Description  update  partner
 // @ModuleID updatePartner
-// @Accept  multipart/form-data
+// @Accept json
 // @Produce  json
 // @Param id path string true "partner id"
-// @Param partner_name formData string true "partner name"
-// @Param logo  formData file true "logo"
-// @Param linkWebsite formData string false "link_website"
-// @Param banner formData file false "banner"
-// @Param banner_kz formData file false "banner kz"
-// @Param position formData int false "position"
-// @Param status formData int false "only 1 or 2" Enums(1,2)
-// @Param start_partnership formData string false "start of partnership"
-// @Param end_partnership formData string false "end of partnership"
-// @Param partner_package formData string false "partner package"
-// @Param reference formData string false "reference"
+// @Param data body domain.UpdatePartner true "update partner"
 // @Success 200 {object} okResponse
 // @Failure 400,404 {object} response
 // @Failure 500 {object} response
@@ -292,7 +283,7 @@ func (h *Handler) getPartnerById(c *fiber.Ctx) error {
 // @Router /partner/{id} [put]
 func (h *Handler) updatePartner(c *fiber.Ctx) error {
 	var (
-		input Partner
+		input domain.UpdatePartner
 		err   error
 	)
 
@@ -306,58 +297,57 @@ func (h *Handler) updatePartner(c *fiber.Ctx) error {
 		return c.Status(fiber.StatusBadRequest).JSON(response{Message: err.Error()})
 	}
 
-	var logo string
-
-	file, _ := c.FormFile("logo")
-
-	if file != nil {
-		logo, err = media.GetFileName(c, file)
-		if err != nil {
-			return c.Status(fiber.StatusBadRequest).JSON(response{Message: err.Error()})
-		}
-	}
-
-	var banner string
-
-	file1, _ := c.FormFile("banner")
-
-	if file1 != nil {
-		banner, err = media.GetFileName(c, file1)
-		if err != nil {
-			return c.Status(fiber.StatusBadRequest).JSON(response{Message: err.Error()})
-		}
-	}
-
-	var bannerKz string
-
-	file2, _ := c.FormFile("banner_kz")
-
-	if file2 != nil {
-		bannerKz, err = media.GetFileName(c, file2)
-		if err != nil {
-			return c.Status(fiber.StatusBadRequest).JSON(response{Message: err.Error()})
-		}
-	}
-
-	partner := domain.Partner{
-		PartnerName:      input.PartnerName,
-		Logo:             logo,
-		LinkWebsite:      input.LinkWebsite,
-		Banner:           banner,
-		BannerKz:         bannerKz,
-		Status:           input.Status,
-		StartPartnership: input.StartPartnership,
-		EndPartnership:   input.EndPartnership,
-		PartnerPackage:   input.PartnerPackage,
-		Reference:        input.Reference,
-		Position:         input.Position,
-	}
-
 	id, err := strconv.Atoi(c.Params("id"))
 	if err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(response{Message: err.Error()})
 	}
-	if err := h.services.Partner.Update(id, partner); err != nil {
+
+	var logo string
+
+	if input.Logo != nil {
+		if *input.Logo != "" {
+			fil := uuid.New().String()
+
+			logo, err = media.Base64ToImage(*input.Logo, fil)
+
+			if err != nil {
+				return c.Status(fiber.StatusBadRequest).JSON(response{Message: err.Error()})
+			}
+			input.Logo = &logo
+
+		}
+	}
+	var bannerRus string
+
+	if input.Banner != nil {
+		if *input.Banner != "" {
+			fil := uuid.New().String()
+
+			bannerRus, err = media.Base64ToImage(*input.Banner, fil)
+
+			if err != nil {
+				return c.Status(fiber.StatusBadRequest).JSON(response{Message: err.Error()})
+			}
+		}
+
+		input.Banner = &bannerRus
+	}
+	var bannerKz string
+
+	if input.BannerKz != nil {
+		if *input.BannerKz != "" {
+			fil := uuid.New().String()
+
+			bannerKz, err = media.Base64ToImage(*input.BannerKz, fil)
+
+			if err != nil {
+				return c.Status(fiber.StatusBadRequest).JSON(response{Message: err.Error()})
+			}
+		}
+
+		input.BannerKz = &bannerKz
+	}
+	if err := h.services.Partner.Update(id, input); err != nil {
 		if errors.Is(err, domain.ErrNotFound) {
 			return c.Status(fiber.StatusBadRequest).JSON(response{Message: err.Error()})
 		}

@@ -53,8 +53,11 @@ func (p *PartnerService) DownloadPartners(file *excelize.File, url string) (*exc
 func (p *PartnerService) GetById(id int) (domain.Partner, error) {
 	return p.repos.GetById(id)
 }
-func (p *PartnerService) Update(id int, inp domain.Partner) error {
+func (p *PartnerService) Update(id int, inp domain.UpdatePartner) error {
 	img, err := p.repos.Update(id, inp)
+	if err != nil {
+		return fmt.Errorf("service.Update: %w", err)
+	}
 	for i, _ := range img {
 		if img[i] != "" {
 			err = media.DeleteImage(img[i])

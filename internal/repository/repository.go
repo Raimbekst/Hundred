@@ -68,7 +68,7 @@ type Partner interface {
 	Create(partner domain.Partner) (int, error)
 	GetAll(page domain.Pagination, status int) (*domain.GetAllPartnersCategoryResponse, error)
 	GetById(id int) (domain.Partner, error)
-	Update(id int, inp domain.Partner) ([]string, error)
+	Update(id int, inp domain.UpdatePartner) ([]string, error)
 	Delete(id int) ([]string, error)
 }
 
