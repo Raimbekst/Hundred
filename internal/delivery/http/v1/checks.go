@@ -134,7 +134,6 @@ func (h *Handler) getAllChecks(c *fiber.Ctx) error {
 	if err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(response{Message: err.Error()})
 	}
-
 	return c.Status(fiber.StatusOK).JSON(list)
 }
 

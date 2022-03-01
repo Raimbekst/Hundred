@@ -20,6 +20,7 @@ require (
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible
 	github.com/go-gomail/gomail v0.0.0-20160411212932-81ebce5c23df
 	github.com/go-openapi/spec v0.20.4 // indirect
+	github.com/gofiber/fiber v1.14.6 // indirect
 	github.com/gofiber/jwt/v3 v3.2.1
 	github.com/golang-jwt/jwt/v4 v4.1.0
 	github.com/google/uuid v1.3.0

@@ -7,6 +7,7 @@ import (
 	"github.com/gofiber/fiber/v2"
 	"github.com/xuri/excelize/v2"
 	"strconv"
+	"strings"
 	"time"
 )
 
@@ -28,6 +29,7 @@ func (c *CheckService) Create(info domain.CheckInfo) (int, error) {
 
 func (c *CheckService) GetAll(ctx *fiber.Ctx, page domain.Pagination, filter domain.FilterForCheck) (*domain.GetAllChecksCategoryResponse, error) {
 	list, err := c.repos.GetAll(ctx, page, filter)
+
 	if err != nil {
 		return nil, fmt.Errorf("service.GetAll: %w", err)
 	}
@@ -46,11 +48,12 @@ func (c *CheckService) DownloadChecks(ctx *fiber.Ctx, file *excelize.File, filte
 	if err != nil {
 		return nil, fmt.Errorf("service.DownloadChecks: %w", err)
 	}
-	id := 2
 
+	id := 2
 	for _, value := range list.Data {
 		unixTime := time.Unix(int64(value.RegisteredAt), 0)
 		dateCheck := time.Unix(int64(value.CheckDate), 0)
+
 		file.SetCellValue("Sheet1", "A"+strconv.Itoa(id), value.Id)
 		file.SetCellValue("Sheet1", "B"+strconv.Itoa(id), value.UserId)
 		file.SetCellValue("Sheet1", "C"+strconv.Itoa(id), value.UserName)
@@ -59,7 +62,13 @@ func (c *CheckService) DownloadChecks(ctx *fiber.Ctx, file *excelize.File, filte
 		file.SetCellValue("Sheet1", "F"+strconv.Itoa(id), unixTime)
 		file.SetCellValue("Sheet1", "G"+strconv.Itoa(id), dateCheck)
 		file.SetCellValue("Sheet1", "H"+strconv.Itoa(id), value.CheckAmount)
-		file.SetCellValue("Sheet1", "I"+strconv.Itoa(id), value.CheckImage)
+		var images []string
+		for _, check := range value.CheckImage {
+			images = append(images, check.CheckImage)
+		}
+		img := strings.Join(images, ",")
+		file.SetCellValue("Sheet1", "I"+strconv.Itoa(id), img)
+
 		id = id + 1
 	}
 	return file, nil

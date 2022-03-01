@@ -132,10 +132,14 @@ func (c *CheckRepository) GetAll(ctx *fiber.Ctx, page domain.Pagination, filter 
 		setValues = "WHERE " + whereClause
 	}
 
+	fmt.Println(setValues)
+
 	queryCount := fmt.Sprintf(
 		`SELECT COUNT(*) FROM %s c %s`, checks, setValues)
 
 	err = c.db.QueryRowx(queryCount).Scan(&count)
+
+	fmt.Println(count)
 
 	if err != nil {
 		return nil, fmt.Errorf("repository.GetAll: %w", err)
