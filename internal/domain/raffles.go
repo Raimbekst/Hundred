@@ -14,6 +14,15 @@ type Raffle struct {
 	PhoneNumber   *string `json:"phone_number" db:"phone_number" default:""`
 }
 
+type UpdateRaffle struct {
+	RaffleDate    *float64 `json:"raffle_date" db:"raffle_date"`
+	RaffleTime    *int     `json:"raffle_time" db:"raffle_time"`
+	CheckCategory *int     `json:"check_category" db:"check_category"`
+	RaffleType    *int     `json:"raffle_type" db:"raffle_type"`
+	Reference     *string  `json:"reference"  db:"reference"`
+	Status        *string  `json:"status" db:"status"`
+}
+
 type GetAllRaffleCategoryResponse struct {
 	Data     []*Raffle      `json:"data"`
 	PageInfo PaginationPage `json:"page-info"`

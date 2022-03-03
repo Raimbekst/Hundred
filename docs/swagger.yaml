@@ -509,7 +509,6 @@ definitions:
     required:
     - check_category
     - raffle_date
-    - raffle_time
     - raffle_type
     type: object
   v1.RegistrationTokenInput:

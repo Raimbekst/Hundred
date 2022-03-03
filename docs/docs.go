@@ -5314,7 +5314,6 @@ var doc = `{
             "required": [
                 "check_category",
                 "raffle_date",
-                "raffle_time",
                 "raffle_type"
             ],
             "properties": {

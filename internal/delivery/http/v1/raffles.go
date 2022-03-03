@@ -32,7 +32,7 @@ func (h *Handler) initRaffleCategoryRoutes(api fiber.Router) {
 
 type Raffle struct {
 	RaffleDate    float64 `json:"raffle_date" validate:"required"`
-	RaffleTime    int     `json:"raffle_time" validate:"required"`
+	RaffleTime    int     `json:"raffle_time" `
 	CheckCategory int     `json:"check_category" validate:"required"`
 	RaffleType    int     `json:"raffle_type" validate:"required" enums:"1,2,3" example:"1" default:"1"`
 	Reference     string  `json:"reference"`
@@ -218,13 +218,13 @@ func (h *Handler) updateRaffle(c *fiber.Ctx) error {
 		return c.Status(fiber.StatusBadRequest).JSON(response{Message: err.Error()})
 	}
 
-	raffle := domain.Raffle{
+	raffle := domain.UpdateRaffle{
 
-		RaffleDate:    input.RaffleDate,
-		RaffleTime:    input.RaffleTime,
-		CheckCategory: input.CheckCategory,
-		RaffleType:    input.RaffleType,
-		Reference:     input.Reference,
+		RaffleDate:    &input.RaffleDate,
+		RaffleTime:    &input.RaffleTime,
+		CheckCategory: &input.CheckCategory,
+		RaffleType:    &input.RaffleType,
+		Reference:     &input.Reference,
 	}
 
 	id, err := strconv.Atoi(c.Params("id"))

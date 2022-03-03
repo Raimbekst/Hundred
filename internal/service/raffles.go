@@ -82,11 +82,11 @@ func (r *RaffleService) DownloadRaffles(file *excelize.File) (*excelize.File, er
 func (r *RaffleService) GetById(id int) (domain.Raffle, error) {
 	return r.repos.GetById(id)
 }
-func (r *RaffleService) Update(id int, inp domain.Raffle) error {
+func (r *RaffleService) Update(id int, inp domain.UpdateRaffle) error {
 
 	status := map[int]string{1: planned, 2: finished, 3: unfinished}
 
-	totalDate := inp.RaffleDate + float64(inp.RaffleTime)
+	totalDate := *inp.RaffleDate + float64(*inp.RaffleTime)
 
 	statusRaffle := status[1]
 
@@ -94,13 +94,13 @@ func (r *RaffleService) Update(id int, inp domain.Raffle) error {
 		statusRaffle = status[3]
 	}
 
-	raf := domain.Raffle{
+	raf := domain.UpdateRaffle{
 		RaffleDate:    inp.RaffleDate,
 		RaffleTime:    inp.RaffleTime,
 		CheckCategory: inp.CheckCategory,
 		RaffleType:    inp.RaffleType,
 		Reference:     inp.Reference,
-		Status:        statusRaffle,
+		Status:        &statusRaffle,
 	}
 	return r.repos.Update(id, raf)
 }

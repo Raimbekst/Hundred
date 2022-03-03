@@ -156,44 +156,44 @@ func (c *RaffleRepos) GetById(id int) (domain.Raffle, error) {
 	}
 	return raffle, nil
 }
-func (c *RaffleRepos) Update(id int, inp domain.Raffle) error {
+
+func (c *RaffleRepos) Update(id int, inp domain.UpdateRaffle) error {
 	setValues := make([]string, 0)
 	args := make([]interface{}, 0)
 	argId := 1
 
-	if inp.RaffleDate != 0 {
+	if inp.RaffleDate != nil {
 		setValues = append(setValues, fmt.Sprintf("raffle_date = to_timestamp($%d) at time zone 'GMT'", argId))
-		args = append(args, inp.RaffleDate)
+		args = append(args, *inp.RaffleDate)
 		argId++
 	}
 
-	if inp.CheckCategory != 0 {
+	if inp.CheckCategory != nil {
 		setValues = append(setValues, fmt.Sprintf("check_category=$%d", argId))
-		args = append(args, inp.CheckCategory)
+		args = append(args, *inp.CheckCategory)
 		argId++
 	}
 
-	if inp.RaffleType != 0 {
+	if inp.RaffleType != nil {
 		setValues = append(setValues, fmt.Sprintf("raffle_type=$%d", argId))
-		args = append(args, inp.RaffleType)
+		args = append(args, *inp.RaffleType)
 		argId++
 	}
 
-	if inp.Status != "" {
+	if inp.Status != nil {
 		setValues = append(setValues, fmt.Sprintf("status=$%d", argId))
-		args = append(args, inp.Status)
+		args = append(args, *inp.Status)
 		argId++
 	}
-
-	if inp.RaffleTime != 0 {
+	if inp.RaffleTime != nil {
 		setValues = append(setValues, fmt.Sprintf("raffle_time=$%d", argId))
-		args = append(args, inp.RaffleTime)
+		args = append(args, *inp.RaffleTime)
 		argId++
 	}
 
-	if inp.Reference != "" {
+	if inp.Reference != nil {
 		setValues = append(setValues, fmt.Sprintf("reference=$%d", argId))
-		args = append(args, inp.Reference)
+		args = append(args, *inp.Reference)
 		argId++
 	}
 	setQuery := strings.Join(setValues, ", ")

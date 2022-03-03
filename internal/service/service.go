@@ -113,7 +113,7 @@ type Raffle interface {
 	Create(city domain.Raffle) (int, error)
 	GetAll(page domain.Pagination, filter domain.FilterForRaffles) (*domain.GetAllRaffleCategoryResponse, error)
 	GetById(id int) (domain.Raffle, error)
-	Update(id int, inp domain.Raffle) error
+	Update(id int, inp domain.UpdateRaffle) error
 	Delete(id int) error
 
 	DownloadRaffles(file *excelize.File) (*excelize.File, error)
